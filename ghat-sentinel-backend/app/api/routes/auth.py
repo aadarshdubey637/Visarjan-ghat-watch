@@ -24,8 +24,9 @@ def auth_config():
     # The presenter login is deliberately public so a demo audience can use it (set only for demo deployments).
     p_email, p_pw = settings.PRESENTER_EMAIL.strip(), settings.PRESENTER_PASSWORD
     if p_email and p_pw and not any(a.role == "demo" for a in demo):
-        demo.append(DemoAccount(role="demo", email=p_email, password=p_pw))
-    return AuthConfig(auth_enabled=settings.AUTH_ENABLED, roles=ROLES, demo_accounts=demo)
+        demo.append(DemoAccount(role="demo", email=normalise_email(p_email), password=p_pw))
+    return AuthConfig(auth_enabled=settings.AUTH_ENABLED, roles=ROLES, demo_accounts=demo,
+                      open_staff_signup=settings.OPEN_STAFF_SIGNUP)
 
 
 @router.post("/login", response_model=TokenResponse, summary="Log in with email and password",
@@ -43,10 +44,12 @@ def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)):
 
 
 @router.post("/register", response_model=TokenResponse, status_code=201,
-             summary="Self-register a community (citizen) account",
+             summary="Self-register an account (community by default; officer/worker when OPEN_STAFF_SIGNUP)",
              responses={409: {"model": ErrorResponse}, **E})
 def register(body: RegisterRequest, db: Session = Depends(get_db)):
-    return create_access_token(users.create_user(db, body.name, body.email, body.password, "citizen"))
+    if body.role != "citizen" and not settings.OPEN_STAFF_SIGNUP:
+        raise ForbiddenError("Officer and field-worker accounts are created by a municipal officer.")
+    return create_access_token(users.create_user(db, body.name, body.email, body.password, body.role))
 
 
 @router.get("/me", response_model=AuthUser, summary="Current user", responses={401: {"model": ErrorResponse}})

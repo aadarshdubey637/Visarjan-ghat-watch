@@ -64,9 +64,11 @@ def test_register_login_me_flow(client):
     assert stored.startswith("scrypt$") and "s3cretpass" not in stored
 
 
-def test_register_validation_duplicate_and_no_role(client):
+def test_register_validation_duplicate_and_no_role(client, monkeypatch):
+    monkeypatch.setattr(settings, "OPEN_STAFF_SIGNUP", False)  # staff self-signup is covered in test_open_signup.py
     base = {"name": "Asha", "email": "a@b.co", "password": "longenough"}
-    assert client.post(f"{P}/auth/register", json={**base, "role": "officer"}).json()["user"]["role"] == "citizen"
+    assert client.post(f"{P}/auth/register", json={**base, "role": "officer"}).status_code == 403
+    assert client.post(f"{P}/auth/register", json=base).json()["user"]["role"] == "citizen"
     dup = client.post(f"{P}/auth/register", json={**base, "email": "A@B.co"})
     assert dup.status_code == 409 and dup.json()["error"]["code"] == "EMAIL_TAKEN"
     for bad in ({"name": "A"}, {"email": "not-an-email"}, {"password": "short"}, {"password": "x" * 129}):

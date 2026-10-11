@@ -3,7 +3,7 @@ import type { AuthConfig, AuthUser, LoginResponse, Paged, Role, UserRecord } fro
 
 export const getAuthConfig = (signal?: AbortSignal) => request<AuthConfig>("/auth/config", { signal });
 export const login = (email: string, password: string) => request<LoginResponse>("/auth/login", { method: "POST", body: { email, password } });
-export const registerCitizen = (b: { name: string; email: string; password: string }) => request<LoginResponse>("/auth/register", { method: "POST", body: b });
+export const registerCitizen = (b: { name: string; email: string; password: string; role?: "citizen" | "officer" | "worker" }) => request<LoginResponse>("/auth/register", { method: "POST", body: b });
 export const getMe = (signal?: AbortSignal) => request<AuthUser>("/auth/me", { signal });
 
 export const listUsers = (p: { role?: Role; limit?: number; offset?: number } = {}, signal?: AbortSignal) =>

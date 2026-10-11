@@ -17,7 +17,7 @@ interface AuthState {
   setViewAs: (r: Role | null) => void;
   effectiveRole: Role | null;
   login: (email: string, password: string) => Promise<AuthUser>;
-  register: (b: { name: string; email: string; password: string }) => Promise<AuthUser>;
+  register: (b: { name: string; email: string; password: string; role?: "citizen" | "officer" | "worker" }) => Promise<AuthUser>;
   logout: () => void;
 }
 const Ctx = createContext<AuthState>({

@@ -28,15 +28,17 @@ const TABS = [
 ] as const;
 
 export default function RegisterPage() {
-  const { user, ready, register: signUp } = useAuth(); const router = useRouter();
+  const { user, ready, register: signUp, config } = useAuth(); const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
   const [tab, setTab] = useState<(typeof TABS)[number]["role"]>("citizen");
   const f = useForm<Form>({ resolver: zodResolver(schema), defaultValues: { name: "", email: "", password: "", confirm: "" } });
   useEffect(() => { if (ready && user) router.replace(homeFor(user.role)); }, [ready, user, router]);
   const e = f.formState.errors;
+  const staffOpen = config?.open_staff_signup !== false;
+  const formOpen = tab === "citizen" || ((tab === "officer" || tab === "worker") && staffOpen);
   const submit = f.handleSubmit(async (v) => {
     setFormError(null);
-    try { const u = await signUp({ name: v.name, email: v.email, password: v.password }); toast.success(`Welcome, ${u.name}`); router.replace(homeFor(u.role)); }
+    try { const u = await signUp({ name: v.name, email: v.email, password: v.password, role: tab === "officer" || tab === "worker" ? tab : "citizen" }); toast.success(`Welcome, ${u.name}`); router.replace(homeFor(u.role)); }
     catch (err) {
       if (err instanceof ApiError && err.code === "EMAIL_TAKEN") f.setError("email", { message: "An account with this email already exists." });
       else if (err instanceof ApiError && err.details) err.details.forEach((d) => { const k = d.field.split(".").pop() as keyof Form; if (k in v) f.setError(k, { message: d.message }); });
@@ -61,7 +63,7 @@ export default function RegisterPage() {
             </button>
           ))}
         </div>
-        {tab !== "citizen" && (
+        {!formOpen && (
           <div className="mt-5 rounded-lg border border-line bg-canvas p-4 text-sm text-ink-muted">
             {tab === "demo"
               ? "The presenter account is a shared demo login. It does not need sign-up."
@@ -69,8 +71,8 @@ export default function RegisterPage() {
             <div className="mt-3"><Link href={`/login?role=${tab}`}><Button variant="primary">Go to sign in</Button></Link></div>
           </div>
         )}
-        {tab === "citizen" && <p className="mt-3 text-sm text-ink-muted">For citizens and Durga Puja organisers.</p>}
-        <form hidden={tab !== "citizen"} onSubmit={submit} className="mt-5 space-y-4" noValidate>
+        {formOpen && <p className="mt-3 text-sm text-ink-muted">{tab === "citizen" ? "For citizens and Durga Puja organisers." : tab === "officer" ? "Creates an officer account: review priorities, generate briefs, manage cases and send messages." : "Creates a field-worker account: see assigned cases and record site findings."}</p>}
+        <form hidden={!formOpen} onSubmit={submit} className="mt-5 space-y-4" noValidate>
           <Field label="Full name" htmlFor="name" error={e.name?.message}><Input id="name" autoComplete="name" {...f.register("name")} /></Field>
           <Field label="Email" htmlFor="email" error={e.email?.message}><Input id="email" type="email" autoComplete="email" {...f.register("email")} /></Field>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -78,7 +80,7 @@ export default function RegisterPage() {
             <Field label="Confirm password" htmlFor="confirm" error={e.confirm?.message}><Input id="confirm" type="password" autoComplete="new-password" {...f.register("confirm")} /></Field>
           </div>
           {formError && <p role="alert" className="rounded-md border border-critical/20 bg-critical-soft p-2.5 text-sm text-critical">{formError}</p>}
-          <Button type="submit" variant="primary" className="w-full" loading={f.formState.isSubmitting}>Create account</Button>
+          <Button type="submit" variant="primary" className="w-full" loading={f.formState.isSubmitting}>{tab === "officer" ? "Create officer account" : tab === "worker" ? "Create field-worker account" : "Create account"}</Button>
         </form>
         <p className="mt-5 text-sm text-ink-muted">Already have an account? <Link href="/login" className="font-medium text-brand hover:underline">Sign in</Link></p>
       </div>

@@ -82,7 +82,7 @@ function LoginForm() {
           </div>
         )}
         <p className="mt-5 text-sm text-ink-muted">New here? <Link href="/register" className="font-medium text-brand hover:underline">Create a community account</Link>, or read the <Link href="/citizen" className="font-medium text-brand hover:underline">citizen guide</Link> without signing in.</p>
-        {tab !== "citizen" && <p className="mt-2 text-xs text-ink-muted">Officer and field-worker accounts are created by a municipal officer. Contact your department to get access.</p>}
+        {(tab === "officer" || tab === "worker") && <p className="mt-2 text-xs text-ink-muted">No account yet? Use <Link href="/register" className="font-medium text-brand hover:underline">Sign up</Link> and pick this account type.</p>}
       </div>
     </div>
   );

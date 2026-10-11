@@ -27,6 +27,10 @@ class Settings(BaseSettings):
 
     AI_RATE_LIMIT_PER_MINUTE: int = 20
     MAX_REQUEST_BYTES: int = 1_000_000
+    # Anyone may self-register as officer or field worker (hackathon/demo setting). Set false to restrict those
+    # roles to accounts created by an officer.
+    OPEN_STAFF_SIGNUP: bool = True
+    MAX_UPLOAD_BYTES: int = 10_000_000  # /evidence and /uploads only (photos, lab CSVs)
     LOG_LEVEL: str = "INFO"
 
     # Authentication (JWT bearer). See docs/AUTH.md.

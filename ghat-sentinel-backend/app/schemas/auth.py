@@ -45,6 +45,7 @@ class RegisterRequest(BaseModel):
     name: str = Field(min_length=2, max_length=80)
     email: str
     password: str = Field(min_length=8, max_length=128)
+    role: Literal["citizen", "officer", "worker"] = "citizen"
 
     _email = field_validator("email")(_valid_email)
 
@@ -106,3 +107,4 @@ class AuthConfig(BaseModel):
     auth_enabled: bool
     roles: list[Role]
     demo_accounts: list[DemoAccount]
+    open_staff_signup: bool = False

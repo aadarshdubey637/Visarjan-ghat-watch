@@ -157,7 +157,7 @@ export interface Metadata {
 export interface AuthUser { id: string; email: string; name: string; role: Role }
 export interface LoginResponse { access_token: string; token_type: "bearer"; expires_in: number; user: AuthUser }
 export interface DemoAccount { role: Role; email: string; password: string }
-export interface AuthConfig { auth_enabled: boolean; roles: Role[]; demo_accounts: DemoAccount[] }
+export interface AuthConfig { auth_enabled: boolean; roles: Role[]; demo_accounts: DemoAccount[]; open_staff_signup?: boolean }
 export interface UserRecord { id: string; email: string; name: string; role: Role; is_active: boolean; created_at: string; phone?: string | null }
 
 export type MessageChannel = "email" | "whatsapp";
