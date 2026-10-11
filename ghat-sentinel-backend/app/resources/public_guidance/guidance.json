@@ -1,0 +1,117 @@
+{
+  "version": "1.0",
+  "approval_notice": {
+    "en": "DRAFT for municipal review: general pollution-prevention practice. Not an official order. Confirm wording with Bhopal Municipal Corporation / MPPCB before public release.",
+    "hi": "नगर निगम समीक्षा हेतु प्रारूप: सामान्य प्रदूषण-रोकथाम सुझाव। यह कोई आधिकारिक आदेश नहीं है। सार्वजनिक करने से पहले भोपाल नगर निगम / MPPCB से शब्दावली की पुष्टि करें।"
+  },
+  "items": [
+    {
+      "id": "clay_idols",
+      "category": "idols",
+      "approval_status": "draft_pending_municipal_review",
+      "basis": "General pollution-prevention practice; CPCB has issued idol-immersion guidelines (see resources). Wording to be confirmed.",
+      "keywords": ["idol", "idols", "clay", "plaster", "pop", "thermocol", "material", "मूर्ति", "मिट्टी", "प्लास्टर", "पीओपी", "थर्माकोल"],
+      "title": {"en": "Prefer natural clay idols", "hi": "प्राकृतिक मिट्टी की मूर्तियों को प्राथमिकता दें"},
+      "body": {
+        "en": "Choose idols made of natural clay without plaster of Paris, plastic or thermocol. Smaller idols place less material in the water.",
+        "hi": "प्लास्टर ऑफ पेरिस, प्लास्टिक या थर्माकोल के बिना प्राकृतिक मिट्टी की मूर्तियाँ चुनें। छोटी मूर्तियाँ पानी में कम सामग्री पहुँचाती हैं।"
+      }
+    },
+    {
+      "id": "natural_colours",
+      "category": "idols",
+      "approval_status": "draft_pending_municipal_review",
+      "basis": "The Track 2 data include heavy-metal tests (chromium, lead, zinc, copper) because paints can carry metals. No health effect is claimed here.",
+      "keywords": ["paint", "paints", "colour", "color", "colours", "chemical", "metal", "metals", "lead", "chromium", "रंग", "पेंट", "रासायनिक", "धातु"],
+      "title": {"en": "Use natural, non-toxic colours", "hi": "प्राकृतिक, गैर-विषैले रंगों का उपयोग करें"},
+      "body": {
+        "en": "Avoid chemical paints and varnish on idols. Use natural, water-soluble colours, because some paints can add metals such as lead or chromium to the water.",
+        "hi": "मूर्तियों पर रासायनिक पेंट और वार्निश से बचें। प्राकृतिक, पानी में घुलने वाले रंग इस्तेमाल करें, क्योंकि कुछ पेंट पानी में सीसा या क्रोमियम जैसी धातुएँ मिला सकते हैं।"
+      }
+    },
+    {
+      "id": "remove_offerings",
+      "category": "offerings",
+      "approval_status": "draft_pending_municipal_review",
+      "basis": "General pollution-prevention practice. Wording to be confirmed.",
+      "keywords": ["flowers", "flower", "garland", "garlands", "cloth", "offering", "offerings", "pooja", "puja", "waste", "compost", "फूल", "माला", "कपड़ा", "पूजा", "सामग्री", "कचरा", "खाद"],
+      "title": {"en": "Remove offerings before immersion", "hi": "विसर्जन से पहले पूजन सामग्री अलग करें"},
+      "body": {
+        "en": "Take flowers, garlands, cloth and plastic wrapping off the idol before immersion. Collect flowers and leaves separately for composting instead of throwing them into the water.",
+        "hi": "विसर्जन से पहले मूर्ति से फूल, माला, कपड़े और प्लास्टिक की पैकिंग हटा लें। फूल-पत्तियों को पानी में डालने के बजाय खाद बनाने के लिए अलग इकट्ठा करें।"
+      }
+    },
+    {
+      "id": "non_biodegradable_decor",
+      "category": "decorations",
+      "approval_status": "draft_pending_municipal_review",
+      "basis": "General pollution-prevention practice. Wording to be confirmed.",
+      "keywords": ["decoration", "decorations", "non-biodegradable", "nonbiodegradable", "plastic", "tinsel", "decor", "pandal", "सजावट", "प्लास्टिक", "थर्माकोल", "पंडाल", "गैर-जैविक"],
+      "title": {"en": "Handle non-biodegradable decorations separately", "hi": "गैर-जैविक सजावट को अलग से संभालें"},
+      "body": {
+        "en": "Do not immerse plastic, thermocol, tinsel or other non-biodegradable decorations. Remove them and keep them for reuse or hand them to the dry-waste collection arranged for the festival.",
+        "hi": "प्लास्टिक, थर्माकोल, चमकीली झालर या अन्य गैर-जैविक सजावट का विसर्जन न करें। उन्हें हटाकर दोबारा उपयोग के लिए रखें या त्योहार के लिए बनी सूखे कचरे की व्यवस्था में दें।"
+      }
+    },
+    {
+      "id": "designated_sites",
+      "category": "sites",
+      "approval_status": "draft_pending_municipal_review",
+      "basis": "The Track 2 problem statement reports an NGT ban on immersion in the Upper and Lower Lakes and new BMC ghats; it does not list approved sites. This backend therefore does not name any approved site.",
+      "keywords": ["where", "site", "sites", "ghat", "ghats", "location", "locations", "allowed", "permitted", "instructions", "official", "lake", "ban", "ngt", "कहाँ", "कहां", "घाट", "स्थान", "अनुमति", "निर्देश", "आधिकारिक", "झील", "प्रतिबंध"],
+      "title": {"en": "Follow officially announced immersion arrangements", "hi": "आधिकारिक रूप से घोषित विसर्जन व्यवस्था का पालन करें"},
+      "body": {
+        "en": "Use only the immersion sites and timings announced by Bhopal Municipal Corporation or the district administration. Do not assume a lake or ghat is open for immersion; check the official announcement first. This service does not publish a list of approved sites.",
+        "hi": "केवल भोपाल नगर निगम या जिला प्रशासन द्वारा घोषित विसर्जन स्थलों और समय का उपयोग करें। यह मानकर न चलें कि कोई झील या घाट विसर्जन के लिए खुला है; पहले आधिकारिक घोषणा देखें। यह सेवा स्वीकृत स्थलों की सूची प्रकाशित नहीं करती।"
+      }
+    },
+    {
+      "id": "home_immersion",
+      "category": "practices",
+      "approval_status": "draft_pending_municipal_review",
+      "basis": "General pollution-prevention practice. Wording to be confirmed.",
+      "keywords": ["home", "tub", "bucket", "artificial", "tank", "pond", "reduce", "reduction", "घर", "बाल्टी", "टब", "कृत्रिम", "कुंड", "तालाब", "कम"],
+      "title": {"en": "Consider immersion in a tub or artificial tank", "hi": "टब या कृत्रिम कुंड में विसर्जन पर विचार करें"},
+      "body": {
+        "en": "Where officially arranged, prefer artificial tanks or immersion in a tub at home with a small clay idol. Water and clay can then be reused in plants rather than released into a lake.",
+        "hi": "जहाँ आधिकारिक व्यवस्था हो, वहाँ कृत्रिम कुंड या घर पर छोटी मिट्टी की मूर्ति का टब में विसर्जन चुनें। पानी और मिट्टी को झील में छोड़ने के बजाय पौधों में उपयोग किया जा सकता है।"
+      }
+    },
+    {
+      "id": "no_littering",
+      "category": "practices",
+      "approval_status": "draft_pending_municipal_review",
+      "basis": "General pollution-prevention practice. Wording to be confirmed.",
+      "keywords": ["litter", "littering", "bins", "bin", "clean", "cleanliness", "trash", "garbage", "कचरा", "सफाई", "डस्टबिन", "गंदगी"],
+      "title": {"en": "Do not litter the ghat or the water's edge", "hi": "घाट या पानी के किनारे कचरा न फैलाएँ"},
+      "body": {
+        "en": "Use the bins provided, carry your waste back if there are none, and do not leave packaging, bottles or cloth at the ghat.",
+        "hi": "उपलब्ध डस्टबिन का उपयोग करें, न हों तो अपना कचरा साथ ले जाएँ, और घाट पर पैकिंग, बोतलें या कपड़े न छोड़ें।"
+      }
+    },
+    {
+      "id": "crowd_safety",
+      "category": "safety",
+      "approval_status": "draft_pending_municipal_review",
+      "basis": "General safety practice; follow instructions of on-site officials.",
+      "keywords": ["safety", "safe", "children", "child", "crowd", "enter", "water", "swim", "सुरक्षा", "सुरक्षित", "बच्चे", "भीड़", "पानी", "तैरना"],
+      "title": {"en": "Stay safe at the water's edge", "hi": "पानी के किनारे सावधानी रखें"},
+      "body": {
+        "en": "Keep children away from the water's edge, avoid going into deep or crowded water, and follow the instructions of officials and volunteers on site.",
+        "hi": "बच्चों को पानी के किनारे से दूर रखें, गहरे या भीड़ वाले पानी में न जाएँ, और मौके पर मौजूद अधिकारियों व स्वयंसेवकों के निर्देशों का पालन करें।"
+      }
+    },
+    {
+      "id": "reading_history",
+      "category": "understanding_data",
+      "approval_status": "draft_pending_municipal_review",
+      "basis": "Parameter meanings follow the Track 2 data dictionary. Historical samples do not describe current conditions.",
+      "keywords": ["reading", "readings", "mean", "means", "meaning", "oxygen", "do", "bod", "ph", "bdl", "data", "result", "results", "water", "quality", "historical", "पठन", "मतलब", "अर्थ", "ऑक्सीजन", "डेटा", "जल", "गुणवत्ता", "परिणाम"],
+      "title": {"en": "What a historical water-quality reading means", "hi": "ऐतिहासिक जल-गुणवत्ता पठन का क्या अर्थ है"},
+      "body": {
+        "en": "Readings come from MPPCB samples taken before, during and one week after past immersion seasons. Dissolved oxygen (mg/l) is the oxygen available in water; BOD (mg/l) shows how much organic waste uses oxygen; pH shows acidity. BDL means below the detection limit, and a blank means not sampled, which is not the same as clean. These are past samples and do not show how the water is today.",
+        "hi": "पठन MPPCB द्वारा पिछले विसर्जन मौसमों में विसर्जन से पहले, दौरान और एक सप्ताह बाद लिए गए नमूनों से हैं। घुलित ऑक्सीजन (mg/l) पानी में उपलब्ध ऑक्सीजन है; BOD (mg/l) बताता है कि कार्बनिक कचरा कितनी ऑक्सीजन खर्च करता है; pH अम्लता दिखाता है। BDL का अर्थ है पहचान-सीमा से नीचे, और खाली स्थान का अर्थ है नमूना नहीं लिया गया, जो साफ होने के बराबर नहीं है। ये पुराने नमूने हैं और आज पानी की स्थिति नहीं बताते।"
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+year,festival,site,water_body,phase,parameter,value,unit_assumed,flag,value_as_printed,parameter_as_printed,site_as_printed,site_match_confidence,source_page
+2024,Durga,Test Ghat A,Upper Lake,during,Dissolved oxygen,3.0,mg/l,,3.0,DO,x,high,1
+2024,Durga,Test Ghat A,Upper Lake,during,Dissolved oxygen,3.0,mg/l,,3.0,DO,x,high,1
+abcd,Durga,Test Ghat A,Upper Lake,during,pH,7,,,7,pH,x,high,1
+2024,Durga,Test Ghat A,Upper Lake,sometime,pH,7,,,7,pH,x,high,1
+2024,Durga,Test Ghat A,Upper Lake,pre,BOD,abc,mg/l,,abc,BOD,x,high,1
+2024,Durga,Test Ghat A,Upper Lake,after,BOD,,mg/l,,,BOD,x,high,1
+2024,Durga,,Upper Lake,after,pH,7,,,7,pH,x,high,1

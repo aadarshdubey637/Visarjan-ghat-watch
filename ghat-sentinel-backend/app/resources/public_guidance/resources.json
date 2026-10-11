@@ -1,0 +1,96 @@
+{
+  "version": "1.0",
+  "notice": "Links are those listed in the Track 2 problem statement and data dictionary (Bhopal Impact Lab 2026). This backend does not crawl the web and has not re-checked each link at request time. No helplines or immersion-site lists are published here because none are in the verified sources.",
+  "items": [
+    {
+      "id": "mppcb_report_2025",
+      "title": "MPPCB Ganesh and Durga Visarjan Report 2025",
+      "url": "https://www.mppcb.mp.gov.in/proc/mon/Ganesh_and_Durga_visarjan_report-2025.pdf",
+      "issuing_organization": "Madhya Pradesh Pollution Control Board (MPPCB)",
+      "resource_type": "monitoring_report",
+      "last_verified": "2026-10-10",
+      "description": "92-page MPPCB immersion-season water-quality report; source of the 2025 readings.",
+      "verification_note": "Downloaded 10 Oct 2026 per the Track 2 data dictionary."
+    },
+    {
+      "id": "mppcb_report_2024",
+      "title": "MPPCB Ganesh and Durga Visarjan Report 2024",
+      "url": "https://www.mppcb.mp.gov.in/proc/mon/Ganesh_and_Durga_visarjan_report-2024.pdf",
+      "issuing_organization": "Madhya Pradesh Pollution Control Board (MPPCB)",
+      "resource_type": "monitoring_report",
+      "last_verified": "2026-10-10",
+      "description": "118-page MPPCB immersion-season water-quality report; source of the 2024 readings.",
+      "verification_note": "Downloaded 10 Oct 2026 per the Track 2 data dictionary."
+    },
+    {
+      "id": "mppcb_report_2023",
+      "title": "MPPCB Idol Immersion Report 2023 (CPCB format)",
+      "url": "https://www.mppcb.mp.gov.in/proc/mon/Idol_immer._Report_23_CPCB.pdf",
+      "issuing_organization": "Madhya Pradesh Pollution Control Board (MPPCB)",
+      "resource_type": "monitoring_report",
+      "last_verified": "2026-10-10",
+      "description": "87-page MPPCB idol-immersion report in CPCB format; source of the 2023 readings.",
+      "verification_note": "Downloaded 10 Oct 2026 per the Track 2 data dictionary."
+    },
+    {
+      "id": "upper_lower_lake_2025_26",
+      "title": "Upper and Lower Lake monthly water quality 2025-26",
+      "url": "https://xgn.mp.nic.in/File_Upload/MONITORING//Yearly%20Water%20Quality%20Status/2026/July/UPPER%20LAKE-2025-26..pdf",
+      "issuing_organization": null,
+      "resource_type": "monitoring_report",
+      "last_verified": "2026-10-10",
+      "description": "Monthly lake water-quality status for 2025-26.",
+      "verification_note": "Downloaded 10 Oct 2026 per the Track 2 data dictionary. Issuing organisation not stated there."
+    },
+    {
+      "id": "upper_lake_2023_24",
+      "title": "Upper Lake water quality 2023-24",
+      "url": "https://www.mppcb.mp.gov.in/proc/mon/Bhopal-2023-24_upper_lake.pdf",
+      "issuing_organization": "Madhya Pradesh Pollution Control Board (MPPCB)",
+      "resource_type": "monitoring_report",
+      "last_verified": "2026-10-10",
+      "description": "Upper Lake water-quality report for 2023-24.",
+      "verification_note": "Downloaded 10 Oct 2026 per the Track 2 data dictionary."
+    },
+    {
+      "id": "upper_lower_lake_comparison",
+      "title": "Upper and Lower Lake comparison, 2003 to 2023",
+      "url": "https://www.mppcb.mp.gov.in/proc/mon/comparatives-uppe-lak-lower-lake-2003-2023.pdf",
+      "issuing_organization": "Madhya Pradesh Pollution Control Board (MPPCB)",
+      "resource_type": "monitoring_report",
+      "last_verified": "2026-10-10",
+      "description": "Long-term lake water-quality comparison by station.",
+      "verification_note": "Downloaded 10 Oct 2026 per the Track 2 data dictionary."
+    },
+    {
+      "id": "cpcb_water_quality_criteria",
+      "title": "CPCB water quality criteria",
+      "url": "https://cpcb.gov.in/water-quality-criteria/",
+      "issuing_organization": "Central Pollution Control Board (CPCB)",
+      "resource_type": "standard",
+      "last_verified": "2026-10-10",
+      "description": "Designated-best-use classes A to E and their limits; the basis of the criteria this service applies.",
+      "verification_note": "Read 10 Oct 2026 per the Track 2 data dictionary."
+    },
+    {
+      "id": "fpj_ngt_ban_2026",
+      "title": "Idol immersion to shift from lakes to safer sites: NGT ban pushes BMC to build 4 dedicated ghats (Free Press Journal, 26 Feb 2026)",
+      "url": "https://www.freepressjournal.in/amp/bhopal/mp-news-idol-immersion-to-shift-from-lakes-to-safer-sites-ngt-ban-pushes-bmc-to-build-4-dedicated-ghats",
+      "issuing_organization": "Free Press Journal (news report, not an official order)",
+      "resource_type": "news_report",
+      "last_verified": null,
+      "description": "News report cited in the Track 2 problem statement about the NGT ban and new BMC ghats.",
+      "verification_note": "Listed in the Track 2 problem statement; a news report, not an official instruction."
+    },
+    {
+      "id": "durga_visarjan_date_2026",
+      "title": "Durga Visarjan date and time 2026 (Drik Panchang)",
+      "url": "https://www.drikpanchang.com/navratri/durga-puja/durga-visarjan-date-time.html?year=2026",
+      "issuing_organization": "Drik Panchang (calendar website, not a government source)",
+      "resource_type": "calendar",
+      "last_verified": null,
+      "description": "Calendar source cited in the Track 2 problem statement for the 20 October 2026 Durga visarjan date.",
+      "verification_note": "Listed in the Track 2 problem statement; not an official municipal notice."
+    }
+  ]
+}

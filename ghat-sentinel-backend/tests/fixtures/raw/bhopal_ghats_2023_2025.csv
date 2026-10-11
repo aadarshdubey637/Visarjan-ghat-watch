@@ -1,0 +1,70 @@
+year,festival,site,water_body,phase,parameter,value,unit_assumed,flag,value_as_printed,parameter_as_printed,site_as_printed,site_match_confidence,source_page
+2019,Durga,Test Ghat A,Upper Lake,pre,Dissolved oxygen,7.0,mg/l,,7.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2019,Durga,Test Ghat A,Upper Lake,during,Dissolved oxygen,6.0,mg/l,,6.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2019,Durga,Test Ghat A,Upper Lake,after,Dissolved oxygen,6.0,mg/l,,6.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2019,Durga,Test Ghat A,Upper Lake,pre,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2019,Durga,Test Ghat A,Upper Lake,during,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2019,Durga,Test Ghat A,Upper Lake,after,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2019,Durga,Test Ghat A,Upper Lake,pre,BOD,1.0,mg/l,,1.0,BOD,Test Ghat A (printed),high,10
+2019,Durga,Test Ghat A,Upper Lake,during,BOD,2.0,mg/l,,2.0,BOD,Test Ghat A (printed),high,10
+2019,Durga,Test Ghat A,Upper Lake,after,BOD,2.0,mg/l,,2.0,BOD,Test Ghat A (printed),high,10
+2020,Durga,Test Ghat A,Upper Lake,pre,Dissolved oxygen,7.0,mg/l,,7.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2020,Durga,Test Ghat A,Upper Lake,during,Dissolved oxygen,5.0,mg/l,,5.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2020,Durga,Test Ghat A,Upper Lake,after,Dissolved oxygen,6.0,mg/l,,6.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2020,Durga,Test Ghat A,Upper Lake,pre,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2020,Durga,Test Ghat A,Upper Lake,during,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2020,Durga,Test Ghat A,Upper Lake,after,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2020,Durga,Test Ghat A,Upper Lake,pre,BOD,1.0,mg/l,,1.0,BOD,Test Ghat A (printed),high,10
+2020,Durga,Test Ghat A,Upper Lake,during,BOD,3.0,mg/l,,3.0,BOD,Test Ghat A (printed),high,10
+2020,Durga,Test Ghat A,Upper Lake,after,BOD,2.0,mg/l,,2.0,BOD,Test Ghat A (printed),high,10
+2021,Durga,Test Ghat A,Upper Lake,pre,Dissolved oxygen,7.0,mg/l,,7.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2021,Durga,Test Ghat A,Upper Lake,during,Dissolved oxygen,4.0,mg/l,,4.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2021,Durga,Test Ghat A,Upper Lake,after,Dissolved oxygen,6.0,mg/l,,6.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2021,Durga,Test Ghat A,Upper Lake,pre,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2021,Durga,Test Ghat A,Upper Lake,during,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2021,Durga,Test Ghat A,Upper Lake,after,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2021,Durga,Test Ghat A,Upper Lake,pre,BOD,1.0,mg/l,,1.0,BOD,Test Ghat A (printed),high,10
+2021,Durga,Test Ghat A,Upper Lake,during,BOD,4.0,mg/l,,4.0,BOD,Test Ghat A (printed),high,10
+2021,Durga,Test Ghat A,Upper Lake,after,BOD,2.0,mg/l,,2.0,BOD,Test Ghat A (printed),high,10
+2022,Durga,Test Ghat A,Upper Lake,pre,Dissolved oxygen,7.0,mg/l,,7.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2022,Durga,Test Ghat A,Upper Lake,during,Dissolved oxygen,2.0,mg/l,,2.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2022,Durga,Test Ghat A,Upper Lake,after,Dissolved oxygen,6.0,mg/l,,6.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2022,Durga,Test Ghat A,Upper Lake,pre,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2022,Durga,Test Ghat A,Upper Lake,during,pH,9.0,,,9.0,pH,Test Ghat A (printed),high,10
+2022,Durga,Test Ghat A,Upper Lake,after,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2022,Durga,Test Ghat A,Upper Lake,pre,BOD,1.0,mg/l,,1.0,BOD,Test Ghat A (printed),high,10
+2022,Durga,Test Ghat A,Upper Lake,during,BOD,5.0,mg/l,,5.0,BOD,Test Ghat A (printed),high,10
+2022,Durga,Test Ghat A,Upper Lake,after,BOD,2.0,mg/l,,2.0,BOD,Test Ghat A (printed),high,10
+2023,Durga,Test Ghat A,Upper Lake,pre,Dissolved oxygen,7.0,mg/l,,7.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2023,Durga,Test Ghat A,Upper Lake,during,Dissolved oxygen,0.0,mg/l,,0.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2023,Durga,Test Ghat A,Upper Lake,after,Dissolved oxygen,6.0,mg/l,,6.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2023,Durga,Test Ghat A,Upper Lake,pre,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2023,Durga,Test Ghat A,Upper Lake,during,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2023,Durga,Test Ghat A,Upper Lake,after,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2023,Durga,Test Ghat A,Upper Lake,pre,BOD,1.0,mg/l,,1.0,BOD,Test Ghat A (printed),high,10
+2023,Durga,Test Ghat A,Upper Lake,during,BOD,6.0,mg/l,,6.0,BOD,Test Ghat A (printed),high,10
+2023,Durga,Test Ghat A,Upper Lake,after,BOD,2.0,mg/l,,2.0,BOD,Test Ghat A (printed),high,10
+2024,Durga,Test Ghat A,Upper Lake,pre,Dissolved oxygen,7.0,mg/l,,7.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2024,Durga,Test Ghat A,Upper Lake,during,Dissolved oxygen,3.0,mg/l,,3.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2024,Durga,Test Ghat A,Upper Lake,after,Dissolved oxygen,6.0,mg/l,,6.0,Dissolved oxygen,Test Ghat A (printed),high,10
+2024,Durga,Test Ghat A,Upper Lake,pre,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2024,Durga,Test Ghat A,Upper Lake,during,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2024,Durga,Test Ghat A,Upper Lake,after,pH,7.0,,,7.0,pH,Test Ghat A (printed),high,10
+2024,Durga,Test Ghat A,Upper Lake,pre,BOD,1.0,mg/l,,1.0,BOD,Test Ghat A (printed),high,10
+2024,Durga,Test Ghat A,Upper Lake,during,BOD,,mg/l,not sampled,not sampled,BOD,Test Ghat A (printed),high,10
+2024,Durga,Test Ghat A,Upper Lake,after,BOD,2.0,mg/l,,2.0,BOD,Test Ghat A (printed),high,10
+2024,Durga,Test Ghat A,Upper Lake,during,Conductivity,1000,µS/cm,,1000,Conductivity,Test Ghat A (printed),high,10
+2024,Durga,Test Ghat A,Upper Lake,after,Conductivity,,µS/cm,BDL,BDL,Conductivity,Test Ghat A (printed),high,10
+2023,Durga,Test Ghat B,Lower Lake,during,Dissolved oxygen,4.0,mg/l,,4.0,Dissolved oxygen,Test Ghat B (printed),high,20
+2023,Durga,Test Ghat B,Lower Lake,during,pH,7.2,,,7.2,pH,Test Ghat B (printed),high,20
+2023,Durga,Test Ghat B,Lower Lake,pre,Dissolved oxygen,6.0,mg/l,,6.0,Dissolved oxygen,Test Ghat B (printed),high,20
+2023,Durga,Test Ghat B,Lower Lake,after,Dissolved oxygen,5.5,mg/l,,5.5,Dissolved oxygen,Test Ghat B (printed),high,20
+2024,Durga,Test Ghat B,Lower Lake,during,Dissolved oxygen,3.0,mg/l,,3.0,Dissolved oxygen,Test Ghat B (printed),high,20
+2024,Durga,Test Ghat B,Lower Lake,during,pH,7.2,,,7.2,pH,Test Ghat B (printed),high,20
+2024,Durga,Test Ghat B,Lower Lake,pre,Dissolved oxygen,6.0,mg/l,,6.0,Dissolved oxygen,Test Ghat B (printed),high,20
+2024,Durga,Test Ghat B,Lower Lake,after,Dissolved oxygen,5.5,mg/l,,5.5,Dissolved oxygen,Test Ghat B (printed),high,20
+2024,Ganesh,Test Ghat B,Lower Lake,during,Dissolved oxygen,,mg/l,BDL,BDL,Dissolved oxygen,Test Ghat B (printed),high,21
+2024,Ganesh,Test Ghat B,Lower Lake,during,BOD,2.0,mg/l,,2.0,BOD,Test Ghat B (printed),high,21
+2024,Ganesh,Test Ghat B,Lower Lake,pre,BOD,,mg/l,not sampled,not sampled,BOD,Test Ghat B (printed),high,21
+2024,Ganesh,Test Ghat C,Kund,pre,pH,7.0,,,7.0,pH,Test Ghat C (printed),medium,30
+2024,Ganesh,Test Ghat C,Kund,during,pH,7.0,,,7.0,pH,Test Ghat C (printed),medium,30
