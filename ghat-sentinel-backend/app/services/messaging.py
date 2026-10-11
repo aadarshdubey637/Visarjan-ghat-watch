@@ -76,7 +76,7 @@ class EmailApiError(Exception):
 def _send_email_api(sender: str, recipient: str, subject: str, body: str) -> None:
     try:
         resp = httpx.post("https://api.resend.com/emails",
-                          headers={"Authorization": f"Bearer {settings.RESEND_API_KEY.strip()}"},
+                          headers={"Authorization": f"Bearer {settings.RESEND_API_KEY.strip().strip(chr(34) + chr(39))}"},
                           json={"from": sender, "to": [recipient], "subject": subject, "text": body},
                           timeout=settings.SMTP_TIMEOUT_SECONDS)
     except httpx.TimeoutException:
@@ -89,8 +89,8 @@ def _send_email_api(sender: str, recipient: str, subject: str, body: str) -> Non
         detail = str(resp.json().get("message") or "")
     except Exception:  # noqa: BLE001
         detail = ""
-    if resp.status_code in (401, 403) and "only send testing emails" not in detail.lower():
-        raise EmailApiError("Mail service API key is invalid")
+    if resp.status_code == 401:
+        raise EmailApiError("Mail service API key is invalid (it should start with re_)")
     raise EmailApiError(f"Mail service rejected the message: {_clean_provider_text(detail, 160)}" if detail
                         else f"Mail service rejected the message (HTTP {resp.status_code})")
 

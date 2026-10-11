@@ -92,7 +92,7 @@ class Settings(BaseSettings):
 
     @property
     def email_api(self) -> bool:
-        return bool(self.RESEND_API_KEY.strip())
+        return bool(self.RESEND_API_KEY.strip().strip(chr(34) + chr(39)))
 
     @property
     def mail_sender(self) -> str:

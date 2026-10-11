@@ -47,7 +47,10 @@ def test_api_errors_are_short_and_never_leak_the_key(client, monkeypatch):
     assert r["failed"] == 1 and "testing emails" in r["results"][0]["error"]
     _setup(monkeypatch, FakeResp(401, {"message": "API key is invalid re_test_key_123"}))
     r = client.post(f"{P}/messaging/email", json={"to": ["a@b.co"], "subject": "Hi", "body": "B"}).json()
-    assert r["results"][0]["error"] == "Mail service API key is invalid"
+    assert r["results"][0]["error"].startswith("Mail service API key is invalid")
+    _setup(monkeypatch, FakeResp(403, {"message": "The domain is not verified"}))
+    r = client.post(f"{P}/messaging/email", json={"to": ["a@b.co"], "subject": "Hi", "body": "B"}).json()
+    assert "domain is not verified" in r["results"][0]["error"]
     _setup(monkeypatch, exc=httpx.ConnectError("boom"))
     r = client.post(f"{P}/messaging/email", json={"to": ["a@b.co"], "subject": "Hi", "body": "B"}).json()
     assert r["results"][0]["error"] == "Could not connect to the mail service"
