@@ -1,5 +1,7 @@
 # Ghat Sentinel
 
+**Live demo: <https://visarjan-ghat-watch-omega.vercel.app/>**
+
 Environmental intelligence for Bhopal's Visarjan Ghat Watch (Bhopal Impact Lab 2026, Track 2). It turns three years of MPPCB
 immersion-season water tests into evidence-backed review priorities, Hindi/English briefs, tracked verification cases and a
 citizen guide. All data are **historical** (2023–2025): this is not live monitoring.

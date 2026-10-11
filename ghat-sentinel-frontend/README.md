@@ -1,5 +1,7 @@
 # Ghat Sentinel Frontend
 
+**Live demo: <https://visarjan-ghat-watch-omega.vercel.app/>**
+
 Next.js 14 (App Router) · TypeScript (strict) · Tailwind · TanStack Query · Recharts · React Hook Form + Zod.
 It talks only to the Ghat Sentinel FastAPI backend (`../ghat-sentinel-backend`) through one typed client
 (`src/lib/api/client.ts`). It never computes criteria, priorities or trends itself; it displays what the backend returns.

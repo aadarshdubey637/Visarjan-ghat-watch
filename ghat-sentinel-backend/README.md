@@ -1,5 +1,7 @@
 # Ghat Sentinel Backend
 
+**Live demo: <https://visarjan-ghat-watch-omega.vercel.app/>**
+
 FastAPI backend for **Ghat Sentinel**, built for Bhopal Impact Lab 2026, Track 2: *Visarjan Ghat Watch*.
 It turns three years of MPPCB immersion-season water tests at Bhopal's ghats into traceable findings, review
 priorities, Hindi/English briefs and a verification-case workflow for municipal officers, plus a small public guide
