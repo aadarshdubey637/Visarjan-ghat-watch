@@ -20,8 +20,12 @@ E = {422: {"model": ErrorResponse}}
 @router.get("/config", response_model=AuthConfig, summary="Public auth configuration")
 def auth_config():
     demo = [DemoAccount(role=a["role"], email=a["email"], password=a["password"]) for a in users.DEMO_ACCOUNTS]
-    return AuthConfig(auth_enabled=settings.AUTH_ENABLED, roles=ROLES,
-                      demo_accounts=demo if users.demo_enabled() else [])
+    demo = demo if users.demo_enabled() else []
+    # The presenter login is deliberately public so a demo audience can use it (set only for demo deployments).
+    p_email, p_pw = settings.PRESENTER_EMAIL.strip(), settings.PRESENTER_PASSWORD
+    if p_email and p_pw and not any(a.role == "demo" for a in demo):
+        demo.append(DemoAccount(role="demo", email=p_email, password=p_pw))
+    return AuthConfig(auth_enabled=settings.AUTH_ENABLED, roles=ROLES, demo_accounts=demo)
 
 
 @router.post("/login", response_model=TokenResponse, summary="Log in with email and password",

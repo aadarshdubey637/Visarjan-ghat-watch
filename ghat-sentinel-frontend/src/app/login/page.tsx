@@ -72,14 +72,13 @@ function LoginForm() {
         {demo && (
           <div className="mt-5 rounded-lg border border-dashed border-marigold/50 bg-marigold-soft p-3 text-xs text-marigold-dark">
             <p className="font-medium">Demo environment</p>
-            <p className="mt-0.5">A {ROLE_LABEL[demo.role].toLowerCase()} demo account is available.{" "}
-              <button type="button" className="font-semibold underline" onClick={() => { setEmail(demo.email); setPassword(demo.password); setError(null); }}>Fill in the demo login</button></p>
+            <p className="mt-0.5">A {ROLE_LABEL[demo.role].toLowerCase()} demo account is available.</p>
+            <p className="mt-1 font-mono">Email: {demo.email}<br />Password: {demo.password}</p>
+            <button type="button" className="mt-1.5 font-semibold underline" onClick={() => { setEmail(demo.email); setPassword(demo.password); setError(null); }}>Fill in the demo login</button>
           </div>
         )}
-        {tab === "citizen" && (
-          <p className="mt-5 text-sm text-ink-muted">New here? <Link href="/register" className="font-medium text-brand hover:underline">Create a community account</Link>, or read the <Link href="/citizen" className="font-medium text-brand hover:underline">citizen guide</Link> without signing in.</p>
-        )}
-        {tab !== "citizen" && <p className="mt-5 text-xs text-ink-muted">Officer and field-worker accounts are created by a municipal officer. Contact your department to get access.</p>}
+        <p className="mt-5 text-sm text-ink-muted">New here? <Link href="/register" className="font-medium text-brand hover:underline">Create a community account</Link>, or read the <Link href="/citizen" className="font-medium text-brand hover:underline">citizen guide</Link> without signing in.</p>
+        {tab !== "citizen" && <p className="mt-2 text-xs text-ink-muted">Officer and field-worker accounts are created by a municipal officer. Contact your department to get access.</p>}
       </div>
     </div>
   );

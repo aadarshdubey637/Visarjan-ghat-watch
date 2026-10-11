@@ -88,7 +88,9 @@ def test_presenter_bootstrap_in_production(client, monkeypatch):
     h = hdr(client, "pitch@example.org", "pitch-pass-2026")
     assert client.get(f"{P}/auth/me", headers=h).json()["role"] == "demo"
     assert client.get(f"{P}/users", headers=h).status_code == 403
-    assert client.get(f"{P}/auth/config").json()["demo_accounts"] == []
+    # a configured presenter login is shown on the sign-in page; nothing else is
+    accs = client.get(f"{P}/auth/config").json()["demo_accounts"]
+    assert [(a["role"], a["email"]) for a in accs] == [("demo", "pitch@example.org")]
 
 
 def test_seed_demo_creates_sample_cases_once(client):
