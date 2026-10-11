@@ -22,11 +22,21 @@ mounts a 1 GB disk at `/var/data` and sets `DATABASE_URL=sqlite:////var/data/gha
 ## Docker
 
 ```bash
-docker build -t ghat-sentinel .
-docker run -p 8000:8000 -e FRONTEND_ORIGIN=http://localhost:3000 ghat-sentinel
+docker compose up -d --build        # or: BACKEND_PORT=8010 docker compose up -d
 ```
 
-The container downloads the datasets on start; mount a volume and set `DATABASE_URL`/`DATA_DIR` to keep cases.
+`docker-compose.yml` builds the image, publishes `${BACKEND_PORT:-8000}`, passes `FRONTEND_ORIGIN` and the optional
+`ANTHROPIC_*` variables, and mounts the `ghat-data` volume at `/data` (SQLite file `/data/ghat_sentinel.db`, CSVs in
+`/data/raw`). The image runs as a non-root user and defines a health check (`/api/v1/health`).
+
+Verified with Docker 29: the image builds, the container turns healthy in about 15 s, the data are downloaded and
+imported, every endpoint answers, CORS allows `http://localhost:3000`, a case created through the API survives
+`docker compose restart` (and the download is skipped the second time), and with no network at all the container still
+starts and reports `data_loaded: false`.
+
+Without compose: `docker build -t ghat-sentinel . && docker run -p 8000:8000 -v ghat-data:/data ghat-sentinel`.
+
+Note: a compose file for the frontend can be added next to the backend service (a commented example is included).
 
 ## Environment checklist
 

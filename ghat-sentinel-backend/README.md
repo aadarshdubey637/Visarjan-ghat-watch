@@ -43,6 +43,18 @@ uvicorn app.main:app --reload --port 8000
 - Health: <http://localhost:8000/api/v1/health>
 - Run the tests: `pytest -q` (no network or API key needed; uses a small synthetic fixture)
 
+### Or with Docker
+
+```bash
+docker compose up -d --build            # API on http://localhost:8000 (first start downloads the data, ~15 s)
+BACKEND_PORT=8010 docker compose up -d  # if port 8000 is already in use
+docker compose down                     # stop (add -v to also delete the saved database/cases)
+```
+
+The `ghat-data` volume keeps the SQLite database (cases, briefs) and the downloaded CSVs across restarts. Optional AI
+wording: put `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` in a `.env` file next to `docker-compose.yml` (compose reads it).
+The container runs as a non-root user and has a health check.
+
 If GitHub is unreachable, `download_data.py` exits with an error and nothing is faked: copy the three CSVs manually
 into `data/raw/` (see [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md)). On startup the app also imports the CSVs
 automatically when the database is empty and `data/raw/` exists.

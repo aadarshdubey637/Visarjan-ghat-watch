@@ -1,0 +1,26 @@
+services:
+  backend:
+    build: .
+    image: ghat-sentinel-backend
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:3000}
+      # Optional AI wording (leave empty for deterministic-only):
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-}
+    volumes:
+      - ghat-data:/data      # SQLite DB (cases, briefs) + downloaded CSVs survive restarts
+    restart: unless-stopped
+
+  # frontend:   # add the Next.js service here once the frontend project is available
+  #   build: ../ghat-sentinel-frontend
+  #   ports: ["3000:3000"]
+  #   environment:
+  #     NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+  #   depends_on:
+  #     backend:
+  #       condition: service_healthy
+
+volumes:
+  ghat-data:

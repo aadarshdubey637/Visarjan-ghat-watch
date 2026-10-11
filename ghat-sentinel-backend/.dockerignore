@@ -1,0 +1,14 @@
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.git
+.env
+*.db
+*.db-wal
+*.db-shm
+data/raw
+dist
+docs/TEST_REPORT.md
+tests
