@@ -2,7 +2,7 @@
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Loader2 } from "lucide-react";
-import { useEffect, useRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { forwardRef, useEffect, useRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 
 export const cn = (...a: Parameters<typeof clsx>) => twMerge(clsx(...a));
 
@@ -35,9 +35,10 @@ export function Button({ variant = "secondary", size = "md", loading, className,
 }
 
 const field = "w-full rounded-md border border-line bg-white px-3 text-sm text-ink placeholder:text-ink-muted/70 focus:border-brand disabled:bg-canvas";
-export function Input({ className, ...p }: InputHTMLAttributes<HTMLInputElement>) { return <input className={cn(field, "min-h-10", className)} {...p} />; }
-export function Textarea({ className, ...p }: TextareaHTMLAttributes<HTMLTextAreaElement>) { return <textarea className={cn(field, "py-2", className)} {...p} />; }
-export function Select({ className, children, ...p }: SelectHTMLAttributes<HTMLSelectElement>) { return <select className={cn(field, "min-h-10 pr-8", className)} {...p}>{children}</select>; }
+// forwardRef: react-hook-form's register() reads values through the ref
+export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function Input({ className, ...p }, ref) { return <input ref={ref} className={cn(field, "min-h-10", className)} {...p} />; });
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(function Textarea({ className, ...p }, ref) { return <textarea ref={ref} className={cn(field, "py-2", className)} {...p} />; });
+export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(function Select({ className, children, ...p }, ref) { return <select ref={ref} className={cn(field, "min-h-10 pr-8", className)} {...p}>{children}</select>; });
 export function Field({ label, htmlFor, error, hint, children }: { label: string; htmlFor?: string; error?: string; hint?: string; children: ReactNode }) {
   return (
     <div className="space-y-1">
