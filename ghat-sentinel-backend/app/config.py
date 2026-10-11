@@ -1,11 +1,13 @@
 import logging
 import secrets
+import re
 from functools import lru_cache
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 RESOURCES_DIR = Path(__file__).resolve().parent / "resources"
+_BARE_FROM = re.compile(r"^(?P<name>[^<>@]+?)\s+(?P<addr>[^\s<>@]+@[^\s<>@]+)$")
 
 
 class Settings(BaseSettings):
@@ -14,7 +16,8 @@ class Settings(BaseSettings):
     APP_NAME: str = "Ghat Sentinel"
     APP_ENV: str = "development"
     API_PREFIX: str = "/api/v1"
-    FRONTEND_ORIGIN: str = "http://localhost:3000"
+    FRONTEND_ORIGIN: str = "http://localhost:3000"  # comma-separated list of exact origins
+    CORS_ORIGIN_REGEX: str = ""  # e.g. https://.*\.vercel\.app to allow Vercel preview deployments
     DATABASE_URL: str = "sqlite:///./ghat_sentinel.db"
     DATA_DIR: str = "./data"
 
@@ -35,6 +38,7 @@ class Settings(BaseSettings):
     BOOTSTRAP_OFFICER_PASSWORD: str = ""
     PRESENTER_EMAIL: str = ""  # optional: demo-role (presenter) account created in any environment
     PRESENTER_PASSWORD: str = ""
+    SEED_DEMO_CASES: bool = False  # create the six sample review cases outside development (pitch deployments)
 
     # Messaging (see docs/MESSAGING.md). Secrets come from the environment only and are never returned or logged.
     SMTP_HOST: str = ""
@@ -74,7 +78,17 @@ class Settings(BaseSettings):
 
     @property
     def smtp_sender(self) -> str:
-        return self.SMTP_FROM.strip() or self.SMTP_USERNAME.strip()
+        """SMTP_FROM, tolerating a missing angle bracket form: 'Name you@x.com' becomes 'Name <you@x.com>'."""
+        raw = self.SMTP_FROM.strip() or self.SMTP_USERNAME.strip()
+        m = _BARE_FROM.match(raw)
+        return f"{m.group('name').strip()} <{m.group('addr')}>" if m else raw
+
+    @property
+    def smtp_password(self) -> str:
+        """Google shows app passwords as 'abcd efgh ijkl mnop'; the real password has no spaces."""
+        if self.SMTP_HOST.strip().lower().endswith(("gmail.com", "googlemail.com")):
+            return "".join(self.SMTP_PASSWORD.split())
+        return self.SMTP_PASSWORD
 
     @property
     def email_missing(self) -> list[str]:

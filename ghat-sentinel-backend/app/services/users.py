@@ -56,6 +56,11 @@ def demo_enabled() -> bool:
     return settings.DEMO_USERS and settings.APP_ENV == "development"
 
 
+def demo_cases_enabled() -> bool:
+    """Sample review cases: development with demo users, or explicitly requested with SEED_DEMO_CASES."""
+    return demo_enabled() or settings.SEED_DEMO_CASES
+
+
 def to_out(u: User) -> UserOut:
     return UserOut(id=u.id, email=u.email, name=u.name, role=u.role, is_active=u.is_active, phone=u.phone,
                    created_at=u.created_at.replace(tzinfo=timezone.utc))

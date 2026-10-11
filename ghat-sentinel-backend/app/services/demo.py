@@ -1,7 +1,8 @@
-"""Sample review cases for demonstrations (development + DEMO_USERS only; idempotent)."""
+"""Sample review cases for demonstrations (development + DEMO_USERS, or SEED_DEMO_CASES; idempotent)."""
 from __future__ import annotations
 
 import logging
+import secrets
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -43,7 +44,7 @@ def _pick_findings(db: Session) -> list:
 
 def seed_demo(db: Session) -> int:
     """Create the sample review cases; returns how many were created (0 when skipped)."""
-    if not users.demo_enabled():
+    if not users.demo_cases_enabled():
         return 0
     if not db.scalar(select(func.count()).select_from(Reading)):
         return 0
@@ -54,7 +55,9 @@ def seed_demo(db: Session) -> int:
         return 0
     if not users.get_by_email(db, WORKER_EMAIL):
         acc = next(a for a in users.DEMO_ACCOUNTS if a["email"] == WORKER_EMAIL)
-        users.create_user(db, acc["name"], acc["email"], acc["password"], acc["role"])
+        # Outside development there must be no well-known credential: the worker gets a random unusable password.
+        password = acc["password"] if users.demo_enabled() else secrets.token_urlsafe(32)
+        users.create_user(db, acc["name"], acc["email"], password, acc["role"])
     created = 0
     for finding, (status, assign) in zip(picked, PLAN):
         r = finding.reading

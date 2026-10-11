@@ -23,7 +23,8 @@ from typing import Any
 
 import httpx
 import pandas as pd
-from sqlalchemy import select
+from sqlalchemy import func, select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
@@ -335,9 +336,10 @@ def _upsert(db: Session, model, rows: list[dict], chunk: int = 2000) -> None:
     if not rows:
         return
     cols = [c.name for c in model.__table__.columns if c.name != "id"]
+    insert = pg_insert if db.get_bind().dialect.name == "postgresql" else sqlite_insert
     for start in range(0, len(rows), chunk):
         part = rows[start:start + chunk]
-        stmt = sqlite_insert(model)
+        stmt = insert(model)
         stmt = stmt.on_conflict_do_update(index_elements=["id"], set_={c: stmt.excluded[c] for c in cols})
         db.execute(stmt, part)
 
@@ -411,20 +413,43 @@ def default_criteria_path() -> Path:
     return RESOURCES_DIR / "criteria" / CRITERIA_FILE
 
 
-def import_all(db: Session, raw_dir: Path | None = None, criteria_path: Path | None = None) -> dict[str, dict]:
-    """Import everything that is available. Safe to re-run: rows are upserted by deterministic ID."""
+def _unchanged(db: Session, path: Path, model) -> bool:
+    """True when this file was already imported (same sha256 in data_sources) and its table still has rows."""
+    rec = db.scalar(select(DataSource).where(DataSource.file_name == path.name))
+    if rec is None or not rec.sha256 or rec.sha256 != sha256_of(path):
+        return False
+    return db.scalar(select(func.count()).select_from(model)) > 0
+
+
+def import_all(db: Session, raw_dir: Path | None = None, criteria_path: Path | None = None,
+               force: bool = False) -> dict[str, dict]:
+    """Import everything that is available. Safe to re-run: rows are upserted by deterministic ID.
+
+    A file whose sha256 matches its data_sources row (and whose table already has rows) is skipped, so restarts
+    on a remote database do not re-upsert ~23,000 rows. ``force=True`` imports regardless.
+    """
     raw_dir = raw_dir or settings.raw_data_dir
     reports: dict[str, dict] = {}
+
+    def run(path: Path, model, importer) -> dict:
+        if not force and _unchanged(db, path, model):
+            log.info("%s: unchanged, skipped", path.name)
+            rec = db.scalar(select(DataSource).where(DataSource.file_name == path.name))
+            return {"file_name": path.name, "skipped": True, "errors": [],
+                    "valid_row_count": rec.valid_row_count, "invalid_row_count": rec.invalid_row_count,
+                    "duplicate_count": (rec.validation_report or {}).get("duplicate_count", 0)}
+        return importer(db, path)
+
     try:
         crit = criteria_path or (raw_dir / CRITERIA_FILE if (raw_dir / CRITERIA_FILE).exists() else default_criteria_path())
-        reports[CRITERIA_FILE] = import_criteria(db, crit)
+        reports[CRITERIA_FILE] = run(crit, Criterion, import_criteria)
         if (raw_dir / BHOPAL_FILE).exists():
-            reports[BHOPAL_FILE] = import_bhopal(db, raw_dir / BHOPAL_FILE)
+            reports[BHOPAL_FILE] = run(raw_dir / BHOPAL_FILE, Reading, import_bhopal)
         else:
             reports[BHOPAL_FILE] = {"file_name": BHOPAL_FILE, "errors": [f"File not found: {raw_dir / BHOPAL_FILE}. "
                                                                         "Run scripts/download_data.py"]}
         if (raw_dir / STATE_FILE).exists():
-            reports[STATE_FILE] = import_statewide(db, raw_dir / STATE_FILE)
+            reports[STATE_FILE] = run(raw_dir / STATE_FILE, StatewideReading, import_statewide)
         else:
             reports[STATE_FILE] = {"file_name": STATE_FILE, "errors": [f"File not found: {raw_dir / STATE_FILE}. "
                                                                       "Run scripts/download_data.py"]}

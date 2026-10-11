@@ -8,13 +8,36 @@ class Base(DeclarativeBase):
     pass
 
 
-def make_engine(url: str):
-    is_sqlite = url.startswith("sqlite")
-    kwargs = {"connect_args": {"check_same_thread": False}} if is_sqlite else {}
-    if is_sqlite and (":memory:" in url or url.rstrip("/") == "sqlite:"):
-        from sqlalchemy.pool import StaticPool
+def normalise_database_url(url: str) -> str:
+    """Map postgres:// and postgresql:// (what Neon/Heroku-style providers hand out) to the psycopg 3 driver.
 
-        kwargs["poolclass"] = StaticPool
+    Query parameters such as sslmode and channel_binding are kept as they are.
+    """
+    url = url.strip()
+    for prefix in ("postgres://", "postgresql://"):
+        if url.startswith(prefix):
+            return "postgresql+psycopg://" + url[len(prefix):]
+    return url
+
+
+def make_engine(url: str):
+    url = normalise_database_url(url)
+    is_sqlite = url.startswith("sqlite")
+    if is_sqlite:
+        kwargs: dict = {"connect_args": {"check_same_thread": False}}
+        if ":memory:" in url or url.rstrip("/") == "sqlite:":
+            from sqlalchemy.pool import StaticPool
+
+            kwargs["poolclass"] = StaticPool
+    else:
+        kwargs = {
+            "pool_pre_ping": True,   # Neon scales to zero and closes idle connections
+            "pool_recycle": 300,
+            "pool_size": 5,
+            "max_overflow": 5,
+            # Neon's pooled endpoint is PgBouncer in transaction mode: no server-side prepared statements.
+            "connect_args": {"prepare_threshold": None, "connect_timeout": 15},
+        }
     eng = create_engine(url, **kwargs)
     if is_sqlite:
 
@@ -47,13 +70,19 @@ def init_db(bind=None) -> None:
     _migrate(eng)
 
 
+_ADDITIVE_COLUMNS = [  # (table, column, DDL type): columns added after the first release
+    ("review_cases", "created_by", "VARCHAR(120)"),
+    ("users", "phone", "VARCHAR(20)"),
+]
+
+
 def _migrate(eng) -> None:
-    """Tiny additive migrations so existing deployed databases keep working."""
-    cols = {c["name"] for c in inspect(eng).get_columns("review_cases")}
-    if "created_by" not in cols:
+    """Tiny additive migrations so existing deployed databases keep working (SQLite and PostgreSQL)."""
+    insp = inspect(eng)
+    for table, column, ddl_type in _ADDITIVE_COLUMNS:
+        if column in {c["name"] for c in insp.get_columns(table)}:
+            continue
+        # IF NOT EXISTS (PostgreSQL only) keeps two instances starting at once from failing each other.
+        clause = "IF NOT EXISTS " if eng.dialect.name == "postgresql" else ""
         with eng.begin() as conn:
-            conn.execute(text("ALTER TABLE review_cases ADD COLUMN created_by VARCHAR(120)"))
-    user_cols = {c["name"] for c in inspect(eng).get_columns("users")}
-    if "phone" not in user_cols:
-        with eng.begin() as conn:
-            conn.execute(text("ALTER TABLE users ADD COLUMN phone VARCHAR(20)"))
+            conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {clause}{column} {ddl_type}"))

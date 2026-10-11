@@ -20,7 +20,7 @@ for citizens.
 | Oct 20 outlook | `GET /predict/oct20` (experimental; refuses to forecast without enough data) |
 | Briefs | `POST /brief/generate`, `/brief/whatsapp` (en / hi / bilingual) |
 | Citizen | `POST /citizen/ask`, `GET /citizen/ghats`, `/citizen/guide`, `/citizen/resources` |
-| Cases | `GET/POST /cases`, `GET/PATCH /cases/{id}` (persisted in SQLite) |
+| Cases | `GET/POST /cases`, `GET/PATCH /cases/{id}` (persisted in SQLite locally, PostgreSQL in production) |
 | Reports | `POST /reports/generate` (JSON or CSV download) |
 
 Principle: **analytics first, AI second.** Criteria checks, trends, priorities and benchmarks are deterministic
@@ -41,7 +41,7 @@ uvicorn app.main:app --reload --port 8000
 
 - Swagger UI: <http://localhost:8000/docs> - OpenAPI JSON: <http://localhost:8000/openapi.json>
 - Health: <http://localhost:8000/api/v1/health>
-- Run the tests: `pip install -r requirements-dev.txt && pytest -q` (no network or API key needed; small synthetic fixture)
+- Run the tests: `pip install -r requirements-dev.txt && pytest -q` (no network or API key needed; small synthetic fixture). To run on PostgreSQL: `TEST_DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/DB pytest` (that database is dropped and recreated: use a throwaway one)
 
 ### Or with Docker
 
@@ -63,9 +63,10 @@ automatically when the database is empty and `data/raw/` exists.
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | default `sqlite:///./ghat_sentinel.db` |
+| `DATABASE_URL` | default `sqlite:///./ghat_sentinel.db`; a `postgres://` / `postgresql://` URL (e.g. Neon) switches to PostgreSQL via psycopg 3 |
 | `DATA_DIR` | folder containing `raw/` CSVs, default `./data` |
 | `FRONTEND_ORIGIN` | comma-separated allowed CORS origins, default `http://localhost:3000` |
+| `CORS_ORIGIN_REGEX` | optional regex of extra allowed origins, e.g. `https://.*\.vercel\.app` for Vercel previews (empty = off) |
 | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | optional; enable Claude wording. Model must be one enabled for your key (a Haiku or Sonnet model). Never exposed to the frontend. |
 | `AI_TIMEOUT_SECONDS`, `AI_RATE_LIMIT_PER_MINUTE` | AI timeout (20 s) and per-IP limit on AI routes (20/min) |
 | `AUTH_ENABLED` | default `true`; `false` disables auth entirely (every request is an anonymous developer) |
@@ -74,6 +75,7 @@ automatically when the database is empty and `data/raw/` exists.
 | `DEMO_USERS` | default `true`; demo accounts exist only when also `APP_ENV=development` |
 | `BOOTSTRAP_OFFICER_EMAIL`, `BOOTSTRAP_OFFICER_PASSWORD` | optional; creates the first officer at startup if missing |
 | `PRESENTER_EMAIL`, `PRESENTER_PASSWORD` | optional; creates a `demo`-role presenter account at startup in any environment if missing. It can create cases, briefs and reports. |
+| `SEED_DEMO_CASES` | default `false`; `true` creates the six sample cases outside development too (the sample worker then gets a random, unusable password) |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_STARTTLS`, `SMTP_USE_SSL`, `SMTP_TIMEOUT_SECONDS` | optional e-mail sending of briefs (SMTP). Secrets never leave the server. See [docs/MESSAGING.md](docs/MESSAGING.md). |
 | `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_API_VERSION`, `WHATSAPP_MODE`, `WHATSAPP_TEMPLATE_NAME`, `WHATSAPP_TEMPLATE_LANG`, `WHATSAPP_TIMEOUT_SECONDS` | optional WhatsApp Cloud API sending (`template` or `text` mode). |
 | `MESSAGING_DRY_RUN`, `MESSAGING_MAX_RECIPIENTS`, `MESSAGING_MAX_PER_HOUR` | log-only mode, recipients per request (20) and per-user hourly cap (60) |

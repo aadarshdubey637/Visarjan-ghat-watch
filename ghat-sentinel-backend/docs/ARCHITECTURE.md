@@ -1,6 +1,6 @@
 # Architecture
 
-A modular monolith: one FastAPI app, logic in independent service modules, SQLite for storage.
+A modular monolith: one FastAPI app, logic in independent service modules, SQLite (local) or PostgreSQL (production) for storage.
 
 ```
 Next.js frontend (separate project)

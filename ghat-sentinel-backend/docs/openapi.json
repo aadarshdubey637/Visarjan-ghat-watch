@@ -4146,7 +4146,7 @@
           },
           "body": {
             "type": "string",
-            "maxLength": 5000,
+            "maxLength": 30000,
             "minLength": 1,
             "title": "Body"
           },
@@ -7538,7 +7538,7 @@
           },
           "body": {
             "type": "string",
-            "maxLength": 1500,
+            "maxLength": 20000,
             "minLength": 1,
             "title": "Body"
           },

@@ -3,7 +3,8 @@ import tempfile
 from pathlib import Path
 
 # Configure BEFORE importing the app: in-memory SQLite, empty data dir, no AI credentials.
-os.environ["DATABASE_URL"] = "sqlite://"
+# TEST_DATABASE_URL (e.g. postgresql://user:pw@localhost:55432/ghat) runs the whole suite on another database.
+os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL") or "sqlite://"
 os.environ["DATA_DIR"] = tempfile.mkdtemp(prefix="ghat_test_data_")
 os.environ["ANTHROPIC_API_KEY"] = ""
 os.environ["ANTHROPIC_MODEL"] = ""

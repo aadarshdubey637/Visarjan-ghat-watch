@@ -1,0 +1,72 @@
+# Render Blueprint (must live at the repository root). Free web service, no persistent disk:
+# the database is Neon PostgreSQL (DATABASE_URL); the CSVs are re-downloaded into ephemeral /tmp on each start.
+# Values marked "sync: false" are entered once in the Render dashboard (names only here, never values).
+services:
+  - type: web
+    name: ghat-sentinel-backend
+    runtime: python
+    rootDir: ghat-sentinel-backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: (python scripts/download_data.py || echo "download failed; continuing"); (python scripts/seed_database.py || echo "seed failed; continuing"); uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: APP_ENV
+        value: production
+      - key: AUTH_ENABLED
+        value: "true"
+      - key: DEMO_USERS
+        value: "false"
+      - key: DATA_DIR
+        value: /tmp/ghat-data       # ephemeral; the CSVs are downloaded again on every start
+      - key: JWT_SECRET
+        generateValue: true         # rotating it invalidates all tokens
+      # Required, set in the dashboard
+      - key: DATABASE_URL           # Neon POOLED connection string
+        sync: false
+      - key: FRONTEND_ORIGIN        # exact Vercel production origin(s), comma-separated
+        sync: false
+      - key: BOOTSTRAP_OFFICER_EMAIL
+        sync: false
+      - key: BOOTSTRAP_OFFICER_PASSWORD
+        sync: false
+      # Optional
+      - key: CORS_ORIGIN_REGEX      # e.g. https://.*\.vercel\.app for preview deployments
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODEL
+        sync: false
+      - key: PRESENTER_EMAIL        # pitch deployment: demo-role account
+        sync: false
+      - key: PRESENTER_PASSWORD
+        sync: false
+      - key: SEED_DEMO_CASES        # "true" creates the six sample cases
+        sync: false
+      # Messaging (docs/MESSAGING.md)
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: SMTP_STARTTLS
+        sync: false
+      - key: SMTP_USE_SSL
+        sync: false
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_TEMPLATE_NAME
+        sync: false
+      - key: WHATSAPP_MODE
+        sync: false
+      - key: MESSAGING_DRY_RUN
+        sync: false

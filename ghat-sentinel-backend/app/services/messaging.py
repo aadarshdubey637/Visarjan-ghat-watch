@@ -112,7 +112,7 @@ def _send_smtp(msg: EmailMessage) -> None:
         if not settings.SMTP_USE_SSL and settings.SMTP_STARTTLS:
             server.starttls()
         if settings.SMTP_USERNAME.strip():
-            server.login(settings.SMTP_USERNAME.strip(), settings.SMTP_PASSWORD)
+            server.login(settings.SMTP_USERNAME.strip(), settings.smtp_password)
         server.send_message(msg)
     finally:
         try:

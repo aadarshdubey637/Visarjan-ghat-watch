@@ -15,6 +15,7 @@ COPY app ./app
 COPY scripts ./scripts
 COPY docs ./docs
 
+# Works with SQLite (default below) or PostgreSQL: set DATABASE_URL=postgresql://... at run time (psycopg is installed).
 # Non-root user; /data holds the SQLite file and the downloaded CSVs (mount a volume here to keep them).
 RUN useradd --create-home --uid 1000 appuser && mkdir -p /data && chown -R appuser /data /app
 USER appuser

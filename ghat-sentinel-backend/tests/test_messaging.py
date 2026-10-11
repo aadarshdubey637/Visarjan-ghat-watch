@@ -593,3 +593,34 @@ def test_migration_adds_phone_column_to_old_users_table():
     with eng.connect() as conn:
         assert conn.execute(text("SELECT phone FROM users")).scalar() is None
     database._migrate(eng)  # idempotent
+
+
+# ---------------------------------------------------- tolerant reading of pasted settings
+
+def test_from_without_angle_brackets_is_repaired(monkeypatch):
+    monkeypatch.setattr(settings, "SMTP_FROM", "Ghat Sentinel someone@gmail.com")
+    assert settings.smtp_sender == "Ghat Sentinel <someone@gmail.com>"
+    monkeypatch.setattr(settings, "SMTP_FROM", "Ghat Sentinel <someone@gmail.com>")
+    assert settings.smtp_sender == "Ghat Sentinel <someone@gmail.com>"
+    monkeypatch.setattr(settings, "SMTP_FROM", "")
+    monkeypatch.setattr(settings, "SMTP_USERNAME", "only@gmail.com")
+    assert settings.smtp_sender == "only@gmail.com"
+
+
+def test_gmail_app_password_spaces_are_ignored(monkeypatch):
+    monkeypatch.setattr(settings, "SMTP_PASSWORD", "abcd efgh ijkl mnop")
+    monkeypatch.setattr(settings, "SMTP_HOST", "smtp.gmail.com")
+    assert settings.smtp_password == "abcdefghijklmnop"
+    monkeypatch.setattr(settings, "SMTP_HOST", "smtp.example.test")
+    assert settings.smtp_password == "abcd efgh ijkl mnop"  # other providers are left untouched
+
+
+def test_login_uses_the_cleaned_password_and_header(client, email_on, monkeypatch):
+    monkeypatch.setattr(settings, "SMTP_HOST", "smtp.gmail.com")
+    monkeypatch.setattr(settings, "SMTP_PASSWORD", "abcd efgh ijkl mnop")
+    monkeypatch.setattr(settings, "SMTP_FROM", "Ghat Sentinel sender@example.test")
+    with mock.patch("smtplib.SMTP") as smtp:
+        r = client.post(f"{P}/messaging/email", json={"to": ["a@example.test"], "subject": "s", "body": "b"})
+    assert r.status_code == 200 and r.json()["sent"] == 1
+    smtp.return_value.login.assert_called_with("sender@example.test", "abcdefghijklmnop")
+    assert smtp.return_value.send_message.call_args.args[0]["From"] == "Ghat Sentinel <sender@example.test>"

@@ -45,8 +45,16 @@ app = FastAPI(
     lifespan=lifespan,
 )
 install_exception_handlers(app)
-app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["GET", "POST", "PATCH"],
-                   allow_headers=["Content-Type", "Authorization"], allow_credentials=False)
+
+
+def cors_options() -> dict:
+    """CORS settings: exact origins from FRONTEND_ORIGIN plus an optional regex (CORS_ORIGIN_REGEX)."""
+    return dict(allow_origins=settings.cors_origins, allow_origin_regex=settings.CORS_ORIGIN_REGEX.strip() or None,
+                allow_methods=["GET", "POST", "PATCH"], allow_headers=["Content-Type", "Authorization"],
+                allow_credentials=False)
+
+
+app.add_middleware(CORSMiddleware, **cors_options())
 
 
 @app.middleware("http")
