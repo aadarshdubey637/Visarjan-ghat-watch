@@ -41,7 +41,7 @@ uvicorn app.main:app --reload --port 8000
 
 - Swagger UI: <http://localhost:8000/docs> - OpenAPI JSON: <http://localhost:8000/openapi.json>
 - Health: <http://localhost:8000/api/v1/health>
-- Run the tests: `pytest -q` (no network or API key needed; uses a small synthetic fixture)
+- Run the tests: `pip install -r requirements-dev.txt && pytest -q` (no network or API key needed; small synthetic fixture)
 
 ### Or with Docker
 
