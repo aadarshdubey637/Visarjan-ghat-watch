@@ -3,6 +3,7 @@ from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
 from app.config import settings
+from app.auth import AUTH_RESPONSES, staff
 from app.database import get_db
 from app.models import Criterion, DataSource, Ghat, Reading
 from app.schemas.meta import Health, Metadata, ParameterMeta, SourceMeta
@@ -26,7 +27,8 @@ def health(db: Session = Depends(get_db)) -> Health:
                   ai_configured=settings.ai_configured, app=settings.APP_NAME, env=settings.APP_ENV)
 
 
-@router.get("/metadata", response_model=Metadata, summary="Data coverage, parameters and sources")
+@router.get("/metadata", response_model=Metadata, summary="Data coverage, parameters and sources",
+            dependencies=[Depends(staff)], responses=AUTH_RESPONSES)
 def metadata(db: Session = Depends(get_db)) -> Metadata:
     params = db.execute(select(Reading.parameter, func.max(Reading.unit), func.count()).group_by(Reading.parameter)
                         .order_by(Reading.parameter)).all()

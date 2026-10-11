@@ -4,13 +4,14 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.config import settings
+from app.auth import AUTH_RESPONSES, staff
 from app.database import get_db
 from app.models import Criterion
 from app.schemas.common import ErrorResponse
 from app.schemas.reading import Criterion as CriterionOut
 from app.services import criteria as crit
 
-router = APIRouter(prefix="/criteria", tags=["criteria"])
+router = APIRouter(prefix="/criteria", tags=["criteria"], dependencies=[Depends(staff)])
 
 
 class CriteriaList(BaseModel):
@@ -21,7 +22,7 @@ class CriteriaList(BaseModel):
 
 
 @router.get("", response_model=CriteriaList, summary="CPCB criteria used by the comparison engine",
-            responses={422: {"model": ErrorResponse}})
+            responses={422: {"model": ErrorResponse}, **AUTH_RESPONSES})
 def list_criteria(cpcb_class: str | None = Query(None, max_length=1, description="Filter to one class (A-E)"),
                   db: Session = Depends(get_db)):
     q = select(Criterion).order_by(Criterion.cpcb_class, Criterion.parameter)

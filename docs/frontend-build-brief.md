@@ -1,3 +1,8 @@
+> **Historical brief.** This is the original instruction given to the frontend developer. The app that was built goes further:
+> it adds sign-in with roles (officer, field worker, community member, developer and a presenter demo account), a landing page,
+> a team page, a ghat x season heatmap and developer-only system status. Where this brief says "no authentication exists" or
+> lists `/settings` for everyone, the code and `README.md` are authoritative.
+
 # MASTER BUILD PROMPT — GHAT SENTINEL FRONTEND
 ## Environmental Intelligence, Water-Quality Analysis & Municipal Action Platform
 

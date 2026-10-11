@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, inspect, text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from app.config import settings
@@ -42,4 +42,14 @@ def get_db():
 def init_db(bind=None) -> None:
     from app import models  # noqa: F401  (registers tables)
 
-    Base.metadata.create_all(bind=bind or engine)
+    eng = bind or engine
+    Base.metadata.create_all(bind=eng)
+    _migrate(eng)
+
+
+def _migrate(eng) -> None:
+    """Tiny additive migrations so existing deployed databases keep working."""
+    cols = {c["name"] for c in inspect(eng).get_columns("review_cases")}
+    if "created_by" not in cols:
+        with eng.begin() as conn:
+            conn.execute(text("ALTER TABLE review_cases ADD COLUMN created_by VARCHAR(120)"))

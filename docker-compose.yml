@@ -1,0 +1,40 @@
+# Ghat Sentinel: backend (FastAPI) + frontend (Next.js).
+#   docker compose up -d --build
+# Defaults use host ports 8010 (API) and 3100 (UI) so they do not collide with other local projects.
+# Override: BACKEND_PORT=8000 FRONTEND_PORT=3000 docker compose up -d --build
+# The browser calls the API directly, so API_PUBLIC_URL must be reachable from the browser (not a docker-internal name).
+services:
+  backend:
+    build: ./ghat-sentinel-backend
+    image: ghat-sentinel-backend
+    ports:
+      - "${BACKEND_PORT:-8010}:8000"
+    environment:
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:3100}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-}
+      APP_ENV: ${APP_ENV:-development}
+      AUTH_ENABLED: ${AUTH_ENABLED:-true}
+      JWT_SECRET: ${JWT_SECRET:-}
+      DEMO_USERS: ${DEMO_USERS:-true}
+      PRESENTER_EMAIL: ${PRESENTER_EMAIL:-}
+      PRESENTER_PASSWORD: ${PRESENTER_PASSWORD:-}
+    volumes:
+      - ghat-data:/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./ghat-sentinel-frontend
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${API_PUBLIC_URL:-http://localhost:8010}
+    image: ghat-sentinel-frontend
+    ports:
+      - "${FRONTEND_PORT:-3100}:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  ghat-data:

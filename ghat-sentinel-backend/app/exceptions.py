@@ -11,6 +11,7 @@ log = logging.getLogger("ghat_sentinel")
 class AppError(Exception):
     status_code = 400
     code = "APP_ERROR"
+    headers: dict[str, str] | None = None
 
     def __init__(self, message: str, code: str | None = None, status_code: int | None = None):
         super().__init__(message)
@@ -46,6 +47,34 @@ class RateLimitError(AppError):
     code = "RATE_LIMITED"
 
 
+class UnauthenticatedError(AppError):
+    status_code = 401
+    code = "UNAUTHENTICATED"
+    headers = {"WWW-Authenticate": "Bearer"}
+
+
+class InvalidCredentialsError(AppError):
+    status_code = 401
+    code = "INVALID_CREDENTIALS"
+
+
+class ForbiddenError(AppError):
+    status_code = 403
+    code = "FORBIDDEN"
+
+
+class EmailTakenError(ConflictError):
+    code = "EMAIL_TAKEN"
+
+
+class UserNotFoundError(NotFoundError):
+    code = "USER_NOT_FOUND"
+
+
+class CannotDeactivateSelfError(ConflictError):
+    code = "CANNOT_DEACTIVATE_SELF"
+
+
 def _body(code: str, message: str, details=None) -> dict:
     err: dict = {"code": code, "message": message}
     if details:
@@ -56,7 +85,7 @@ def _body(code: str, message: str, details=None) -> dict:
 def install_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def _app_error(_: Request, exc: AppError):
-        return JSONResponse(status_code=exc.status_code, content=_body(exc.code, exc.message))
+        return JSONResponse(status_code=exc.status_code, content=_body(exc.code, exc.message), headers=exc.headers)
 
     @app.exception_handler(RequestValidationError)
     async def _validation(_: Request, exc: RequestValidationError):

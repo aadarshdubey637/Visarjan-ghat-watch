@@ -15,6 +15,20 @@ services:
         value: 3.11.9
       - key: APP_ENV
         value: production
+      - key: AUTH_ENABLED
+        value: "true"
+      - key: DEMO_USERS
+        value: "false"
+      - key: JWT_SECRET
+        generateValue: true     # secret; rotating it invalidates all tokens
+      - key: BOOTSTRAP_OFFICER_EMAIL
+        sync: false
+      - key: BOOTSTRAP_OFFICER_PASSWORD
+        sync: false
+      - key: PRESENTER_EMAIL     # optional demo-role (presenter) account for a pitch deployment
+        sync: false
+      - key: PRESENTER_PASSWORD
+        sync: false
       - key: DATABASE_URL
         value: sqlite:////var/data/ghat_sentinel.db
       - key: DATA_DIR

@@ -68,6 +68,32 @@ automatically when the database is empty and `data/raw/` exists.
 | `FRONTEND_ORIGIN` | comma-separated allowed CORS origins, default `http://localhost:3000` |
 | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | optional; enable Claude wording. Model must be one enabled for your key (a Haiku or Sonnet model). Never exposed to the frontend. |
 | `AI_TIMEOUT_SECONDS`, `AI_RATE_LIMIT_PER_MINUTE` | AI timeout (20 s) and per-IP limit on AI routes (20/min) |
+| `AUTH_ENABLED` | default `true`; `false` disables auth entirely (every request is an anonymous developer) |
+| `JWT_SECRET` | signing secret; required when `APP_ENV=production` (otherwise a random one is generated at startup) |
+| `ACCESS_TOKEN_MINUTES` | token lifetime, default 480 |
+| `DEMO_USERS` | default `true`; demo accounts exist only when also `APP_ENV=development` |
+| `BOOTSTRAP_OFFICER_EMAIL`, `BOOTSTRAP_OFFICER_PASSWORD` | optional; creates the first officer at startup if missing |
+| `PRESENTER_EMAIL`, `PRESENTER_PASSWORD` | optional; creates a `demo`-role presenter account at startup in any environment if missing. It can create cases, briefs and reports. |
+
+## Authentication
+
+JWT bearer auth with roles `officer`, `worker`, `citizen`, `developer`, `demo` (full matrix and security notes in
+[docs/AUTH.md](docs/AUTH.md)). Log in via `POST /api/v1/auth/login`, then send `Authorization: Bearer <token>`.
+Citizens self-register at `/auth/register`; officers create workers/officers via `POST /users`.
+
+Demo accounts (only when `DEMO_USERS=true` and `APP_ENV=development`): `officer@ghat.demo` / `Officer#Demo2026`,
+`worker@ghat.demo` / `Worker#Demo2026`, `citizen@ghat.demo` / `Citizen#Demo2026`,
+`developer@ghat.demo` / `Developer#Demo2026`, `presenter@ghat.demo` / `Presenter#Demo2026`.
+
+The `demo` role (presenter) behaves like an officer everywhere except user management (`/users` returns 403): one
+login to demo every feature. In development with `DEMO_USERS=true`, startup also creates 6 sample review cases
+(created by `demo-seed@ghat.demo`, notes prefixed `[Demo data]`) covering all four statuses.
+
+Create or update a user in the configured database:
+
+```bash
+python scripts/create_user.py --email chief@city.gov --name "Chief Officer" --role officer   # prompts for password
+```
 
 ## Repository layout
 
@@ -105,8 +131,8 @@ Regenerate the OpenAPI file with `python scripts/export_openapi.py` (writes `doc
 - The public guidance (`app/resources/public_guidance/guidance.json`) is **draft general guidance pending municipal
   review**, labelled as such in the API. No helplines or approved-site lists are published because none are in the
   verified sources.
-- No authentication (public demo deployment). Case endpoints are open writes; put the API behind access control
-  before real municipal use.
+- Authentication is JWT bearer with an in-memory, per-process login rate limit; see docs/AUTH.md for security notes.
+  Never run production with `DEMO_USERS` accounts or `AUTH_ENABLED=false`.
 - The Claude path is covered by mocked tests only; it has not been exercised against the live API in this repo.
 
 ## License

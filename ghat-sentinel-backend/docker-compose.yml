@@ -9,6 +9,12 @@ services:
       # Optional AI wording (leave empty for deterministic-only):
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-}
+      APP_ENV: ${APP_ENV:-development}
+      AUTH_ENABLED: ${AUTH_ENABLED:-true}
+      JWT_SECRET: ${JWT_SECRET:-}
+      DEMO_USERS: ${DEMO_USERS:-true}
+      PRESENTER_EMAIL: ${PRESENTER_EMAIL:-}
+      PRESENTER_PASSWORD: ${PRESENTER_PASSWORD:-}
     volumes:
       - ghat-data:/data      # SQLite DB (cases, briefs) + downloaded CSVs survive restarts
     restart: unless-stopped

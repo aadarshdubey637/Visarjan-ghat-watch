@@ -7,4 +7,5 @@ from app.models.tables import (  # noqa: F401
     Reading,
     ReviewCase,
     StatewideReading,
+    User,
 )

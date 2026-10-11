@@ -28,7 +28,8 @@ def to_schema(c: ReviewCase) -> CaseOut:
         id=c.id, ghat_id=c.ghat_id, reading_ids=sorted(link.reading_id for link in c.links),
         created_at=c.created_at.replace(tzinfo=timezone.utc), updated_at=c.updated_at.replace(tzinfo=timezone.utc),
         priority_level=c.priority_level, recommended_action=c.recommended_action,
-        status=c.status, assigned_to=c.assigned_to, notes=c.notes or "", resolution_summary=c.resolution_summary)
+        status=c.status, assigned_to=c.assigned_to, notes=c.notes or "", resolution_summary=c.resolution_summary,
+        created_by=c.created_by)
 
 
 def get_case(db: Session, case_id: str) -> ReviewCase:
@@ -38,7 +39,7 @@ def get_case(db: Session, case_id: str) -> ReviewCase:
     return c
 
 
-def create_case(db: Session, data: CaseCreate) -> ReviewCase:
+def create_case(db: Session, data: CaseCreate, created_by: str | None = None) -> ReviewCase:
     get_ghat(db, data.ghat_id)
     ids = list(dict.fromkeys(data.reading_ids))
     if ids:
@@ -52,7 +53,7 @@ def create_case(db: Session, data: CaseCreate) -> ReviewCase:
     case = ReviewCase(
         id=f"case_{uuid.uuid4().hex[:10]}", ghat_id=data.ghat_id, created_at=now, updated_at=now,
         priority_level=priority, recommended_action=data.recommended_action.strip(), status="needs_verification",
-        notes=data.notes or "", assigned_to=None, resolution_summary=None,
+        notes=data.notes or "", assigned_to=None, resolution_summary=None, created_by=created_by,
         links=[CaseReading(reading_id=i) for i in ids])
     try:
         db.add(case)
@@ -92,8 +93,15 @@ def update_case(db: Session, case_id: str, data: CaseUpdate) -> ReviewCase:
     return case
 
 
-def list_cases(db: Session, status: str | None, ghat_id: str | None, limit: int, offset: int) -> CaseList:
+def is_assigned_to(case: ReviewCase, identities: list[str]) -> bool:
+    return bool(case.assigned_to) and case.assigned_to.strip().lower() in identities
+
+
+def list_cases(db: Session, status: str | None, ghat_id: str | None, limit: int, offset: int,
+               assignee_identities: list[str] | None = None) -> CaseList:
     q = select(ReviewCase)
+    if assignee_identities is not None:  # worker view: only cases assigned to them (case-insensitive)
+        q = q.where(func.lower(func.trim(ReviewCase.assigned_to)).in_(assignee_identities))
     if status:
         q = q.where(ReviewCase.status == status)
     if ghat_id:

@@ -1,3 +1,5 @@
+import logging
+import secrets
 from functools import lru_cache
 from pathlib import Path
 
@@ -24,6 +26,16 @@ class Settings(BaseSettings):
     MAX_REQUEST_BYTES: int = 1_000_000
     LOG_LEVEL: str = "INFO"
 
+    # Authentication (JWT bearer). See docs/AUTH.md.
+    AUTH_ENABLED: bool = True
+    JWT_SECRET: str = ""
+    ACCESS_TOKEN_MINUTES: int = 480
+    DEMO_USERS: bool = True  # demo accounts are only ever created/exposed when APP_ENV == "development"
+    BOOTSTRAP_OFFICER_EMAIL: str = ""
+    BOOTSTRAP_OFFICER_PASSWORD: str = ""
+    PRESENTER_EMAIL: str = ""  # optional: demo-role (presenter) account created in any environment
+    PRESENTER_PASSWORD: str = ""
+
     # Analysis defaults
     DEFAULT_CPCB_CLASS: str = "B"  # Outdoor bathing (organised): explicit project choice
     FORECAST_MIN_SEASONS: int = 5
@@ -39,6 +51,17 @@ class Settings(BaseSettings):
     @property
     def ai_configured(self) -> bool:
         return bool(self.ANTHROPIC_API_KEY.strip() and self.ANTHROPIC_MODEL.strip())
+
+
+def ensure_jwt_secret() -> None:
+    """Fail fast in production without a secret; otherwise generate an ephemeral one (tokens die on restart)."""
+    if not settings.AUTH_ENABLED or settings.JWT_SECRET.strip():
+        return
+    if settings.APP_ENV == "production":
+        raise RuntimeError("JWT_SECRET must be set when APP_ENV=production and AUTH_ENABLED is true.")
+    settings.JWT_SECRET = secrets.token_urlsafe(48)
+    logging.getLogger("ghat_sentinel").warning(
+        "JWT_SECRET is not set: generated a random secret for this process. Tokens become invalid on restart.")
 
 
 @lru_cache

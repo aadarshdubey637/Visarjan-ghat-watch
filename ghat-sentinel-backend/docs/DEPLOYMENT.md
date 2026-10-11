@@ -4,7 +4,8 @@
 
 1. Create a Blueprint from the repository (the backend lives in `ghat-sentinel-backend/`; set that as the service root
    directory).
-2. Set secrets in the dashboard: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` (both optional), and `FRONTEND_ORIGIN` (the
+2. `render.yaml` sets `APP_ENV=production`, `DEMO_USERS=false`, `AUTH_ENABLED=true` and generates `JWT_SECRET`; also set `BOOTSTRAP_OFFICER_EMAIL` and `BOOTSTRAP_OFFICER_PASSWORD` in the dashboard to create the first officer.
+   Set secrets in the dashboard: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` (both optional), and `FRONTEND_ORIGIN` (the
    exact origin of your Vercel site, e.g. `https://your-app.vercel.app`; comma-separate several).
 3. Start command (already in `render.yaml`): download the CSVs, import them (idempotent), then run `uvicorn`.
 4. Health check path: `/api/v1/health`.
@@ -25,8 +26,8 @@ mounts a 1 GB disk at `/var/data` and sets `DATABASE_URL=sqlite:////var/data/gha
 docker compose up -d --build        # or: BACKEND_PORT=8010 docker compose up -d
 ```
 
-`docker-compose.yml` builds the image, publishes `${BACKEND_PORT:-8000}`, passes `FRONTEND_ORIGIN` and the optional
-`ANTHROPIC_*` variables, and mounts the `ghat-data` volume at `/data` (SQLite file `/data/ghat_sentinel.db`, CSVs in
+`docker-compose.yml` builds the image, publishes `${BACKEND_PORT:-8000}`, passes `FRONTEND_ORIGIN`, `APP_ENV`
+(default `development`), `AUTH_ENABLED`, `JWT_SECRET`, `DEMO_USERS` and the optional `ANTHROPIC_*` variables, and mounts the `ghat-data` volume at `/data` (SQLite file `/data/ghat_sentinel.db`, CSVs in
 `/data/raw`). The image runs as a non-root user and defines a health check (`/api/v1/health`).
 
 Verified with Docker 29: the image builds, the container turns healthy in about 15 s, the data are downloaded and
@@ -41,9 +42,9 @@ Note: a compose file for the frontend can be added next to the backend service (
 ## Environment checklist
 
 `FRONTEND_ORIGIN` correct (CORS), `DATABASE_URL`/`DATA_DIR` on the persistent disk, `ANTHROPIC_*` set only if you want AI
-wording, `APP_ENV=production`. No authentication exists: treat the public URL as a demo; case endpoints accept writes
-from any allowed browser origin, and non-browser clients can write regardless of CORS. Put the API behind access
-control before real municipal use.
+wording, `APP_ENV=production`, `AUTH_ENABLED=true`, a long random `JWT_SECRET` (kept secret; the app refuses to start
+in production without it), `DEMO_USERS=false`, and `BOOTSTRAP_OFFICER_EMAIL`/`BOOTSTRAP_OFFICER_PASSWORD` (or
+`python scripts/create_user.py`) to create the first officer. See `AUTH.md`. The login rate limit is per process.
 
 ## Cold starts and outages
 

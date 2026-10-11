@@ -19,6 +19,46 @@ Data coverage, parameters and sources
 | Status | Response |
 |---|---|
 | 200 | `Metadata` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
+
+## `GET /api/v1/auth/config`
+Public auth configuration
+
+| Status | Response |
+|---|---|
+| 200 | `AuthConfig` |
+
+## `POST /api/v1/auth/login`
+Log in with email and password
+
+Request body: `LoginRequest`
+
+| Status | Response |
+|---|---|
+| 200 | `TokenResponse` |
+| 401 | `ErrorResponse` |
+| 429 | `ErrorResponse` |
+| 422 | `ErrorResponse` |
+
+## `POST /api/v1/auth/register`
+Self-register a community (citizen) account
+
+Request body: `RegisterRequest`
+
+| Status | Response |
+|---|---|
+| 201 | `TokenResponse` |
+| 409 | `ErrorResponse` |
+| 422 | `ErrorResponse` |
+
+## `GET /api/v1/auth/me`
+Current user
+
+| Status | Response |
+|---|---|
+| 200 | `AuthUser` |
+| 401 | `ErrorResponse` |
 
 ## `GET /api/v1/ghats`
 List ghats found in the imported data
@@ -33,6 +73,8 @@ List ghats found in the imported data
 |---|---|
 | 200 | `GhatList` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `GET /api/v1/ghats/ranked`
 Ghats ranked by review priority
@@ -50,6 +92,8 @@ Deterministic project-defined heuristic; not an official classification. Date fi
 |---|---|
 | 200 | `RankedResponse` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `GET /api/v1/ghats/{ghat_id}`
 Ghat details
@@ -64,6 +108,8 @@ Ghat details
 | 200 | `GhatDetail` |
 | 404 | `ErrorResponse` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `GET /api/v1/ghats/{ghat_id}/readings`
 Observed readings with provenance
@@ -84,6 +130,8 @@ Observed readings with provenance
 | 200 | `ReadingsPage` |
 | 404 | `ErrorResponse` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `GET /api/v1/ghats/{ghat_id}/trends`
 Historical series and descriptive trends
@@ -100,6 +148,8 @@ Historical series and descriptive trends
 | 200 | `TrendsResponse` |
 | 404 | `ErrorResponse` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `GET /api/v1/analytics/overview`
 Dashboard metrics
@@ -112,6 +162,8 @@ Dashboard metrics
 |---|---|
 | 200 | `Overview` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `GET /api/v1/analytics/findings`
 Outside-criterion readings, most severe first
@@ -129,6 +181,8 @@ Outside-criterion readings, most severe first
 | 200 | `FindingsPage` |
 | 404 | `ErrorResponse` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `GET /api/v1/analytics/benchmark`
 Bhopal vs statewide (only when comparable)
@@ -146,6 +200,8 @@ Bhopal vs statewide (only when comparable)
 | 200 | `Benchmark` |
 | 404 | `ErrorResponse` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `GET /api/v1/criteria`
 CPCB criteria used by the comparison engine
@@ -158,6 +214,8 @@ CPCB criteria used by the comparison engine
 |---|---|
 | 200 | `CriteriaList` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `GET /api/v1/predict/oct20`
 Experimental 20 October seasonal outlook
@@ -175,6 +233,8 @@ Returns an experimental estimate only when enough comparable history exists; oth
 | 200 | `Oct20Outlook` |
 | 404 | `ErrorResponse` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `POST /api/v1/brief/generate`
 Evidence-backed municipal brief
@@ -188,6 +248,8 @@ Request body: `BriefRequest`
 | 422 | `ErrorResponse` |
 | 429 | `ErrorResponse` |
 | 503 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `POST /api/v1/brief/whatsapp`
 Copyable WhatsApp-ready brief
@@ -201,6 +263,8 @@ Request body: `WhatsAppRequest`
 | 422 | `ErrorResponse` |
 | 429 | `ErrorResponse` |
 | 503 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `POST /api/v1/citizen/ask`
 Ask a question about approved guidance
@@ -242,7 +306,7 @@ Official resources and source metadata
 | 200 | `Resources` |
 
 ## `GET /api/v1/cases`
-Verification queue
+Verification queue (workers see only their assigned cases)
 
 | Parameter | In | Required | Type |
 |---|---|---|---|
@@ -255,6 +319,8 @@ Verification queue
 |---|---|
 | 200 | `CaseList` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `POST /api/v1/cases`
 Create a verification case
@@ -267,6 +333,8 @@ Request body: `CaseCreate`
 | 404 | `ErrorResponse` |
 | 409 | `ErrorResponse` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `GET /api/v1/cases/{case_id}`
 Get one case
@@ -281,9 +349,13 @@ Get one case
 | 404 | `ErrorResponse` |
 | 409 | `ErrorResponse` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `PATCH /api/v1/cases/{case_id}`
 Update status, assignee and notes
+
+Officers/developers may change any field. Workers may only update their own assigned cases: notes, resolution_summary and status (under_review or resolved).
 
 | Parameter | In | Required | Type |
 |---|---|---|---|
@@ -297,6 +369,8 @@ Request body: `CaseUpdate`
 | 404 | `ErrorResponse` |
 | 409 | `ErrorResponse` |
 | 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
 
 ## `POST /api/v1/reports/generate`
 Evidence report (JSON, or CSV download)
@@ -309,6 +383,57 @@ Request body: `ReportRequest`
 |---|---|
 | 200 | `Report` |
 | 404 | `ErrorResponse` |
+| 422 | `ErrorResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
+
+## `GET /api/v1/users`
+List users (officer, developer)
+
+| Parameter | In | Required | Type |
+|---|---|---|---|
+| `role` | query | no | string |
+| `limit` | query | no | integer |
+| `offset` | query | no | integer |
+
+| Status | Response |
+|---|---|
+| 200 | `UserList` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
+| 422 | `ErrorResponse` |
+
+## `POST /api/v1/users`
+Create a worker/officer/developer account
+
+Officers may create worker and officer accounts; only developers may create developer accounts. Citizens self-register via /auth/register.
+
+Request body: `UserCreate`
+
+| Status | Response |
+|---|---|
+| 201 | `UserOut` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
+| 409 | `ErrorResponse` |
+| 422 | `ErrorResponse` |
+
+## `PATCH /api/v1/users/{user_id}`
+Activate/deactivate or rename a user
+
+| Parameter | In | Required | Type |
+|---|---|---|---|
+| `user_id` | path | yes | string |
+
+Request body: `UserUpdate`
+
+| Status | Response |
+|---|---|
+| 200 | `UserOut` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
+| 404 | `ErrorResponse` |
+| 409 | `ErrorResponse` |
 | 422 | `ErrorResponse` |
 
 ## Schemas
@@ -324,6 +449,23 @@ Request body: `ReportRequest`
 | `generated_at` | string | yes |
 | `generation_mode` | template|ai | no |
 | `ai_status` | string | no |
+
+### AuthConfig
+
+| Field | Type | Required |
+|---|---|---|
+| `auth_enabled` | boolean | yes |
+| `roles` | array | yes |
+| `demo_accounts` | array | yes |
+
+### AuthUser
+
+| Field | Type | Required |
+|---|---|---|
+| `id` | string | yes |
+| `email` | string | yes |
+| `name` | string | yes |
+| `role` | officer|worker|citizen|developer|demo | yes |
 
 ### Benchmark
 
@@ -491,6 +633,14 @@ Request body: `ReportRequest`
 | `site_match_confidence` | string | yes |
 | `warnings` | array | yes |
 
+### DemoAccount
+
+| Field | Type | Required |
+|---|---|---|
+| `role` | officer|worker|citizen|developer|demo | yes |
+| `email` | string | yes |
+| `password` | string | yes |
+
 ### ErrorDetail
 
 | Field | Type | Required |
@@ -632,6 +782,13 @@ Request body: `ReportRequest`
 | `ai_configured` | boolean | yes |
 | `app` | string | yes |
 | `env` | string | yes |
+
+### LoginRequest
+
+| Field | Type | Required |
+|---|---|---|
+| `email` | string | yes |
+| `password` | string | yes |
 
 ### Metadata
 
@@ -817,6 +974,14 @@ Request body: `ReportRequest`
 | `items` | array | yes |
 | `limitations` | array | yes |
 
+### RegisterRequest
+
+| Field | Type | Required |
+|---|---|---|
+| `name` | string | yes |
+| `email` | string | yes |
+| `password` | string | yes |
+
 ### Report
 
 | Field | Type | Required |
@@ -880,6 +1045,7 @@ Request body: `ReportRequest`
 | `assigned_to` | string | yes |
 | `notes` | string | yes |
 | `resolution_summary` | string | yes |
+| `created_by` | string | no |
 
 ### SeasonValue
 
@@ -929,6 +1095,15 @@ Request body: `ReportRequest`
 | `exceedance_rate` | number | no |
 | `years` | array | yes |
 
+### TokenResponse
+
+| Field | Type | Required |
+|---|---|---|
+| `access_token` | string | yes |
+| `token_type` | bearer | no |
+| `expires_in` | integer | yes |
+| `user` | AuthUser | yes |
+
 ### TrendPoint
 
 | Field | Type | Required |
@@ -976,6 +1151,42 @@ Request body: `ReportRequest`
 | `upper` | number | yes |
 | `std` | number | yes |
 | `note` | string | yes |
+
+### UserCreate
+
+| Field | Type | Required |
+|---|---|---|
+| `name` | string | yes |
+| `email` | string | yes |
+| `password` | string | yes |
+| `role` | officer|worker|citizen|developer|demo | yes |
+
+### UserList
+
+| Field | Type | Required |
+|---|---|---|
+| `total` | integer | yes |
+| `limit` | integer | yes |
+| `offset` | integer | yes |
+| `items` | array | yes |
+
+### UserOut
+
+| Field | Type | Required |
+|---|---|---|
+| `id` | string | yes |
+| `email` | string | yes |
+| `name` | string | yes |
+| `role` | officer|worker|citizen|developer|demo | yes |
+| `is_active` | boolean | yes |
+| `created_at` | string (format date-time) | yes |
+
+### UserUpdate
+
+| Field | Type | Required |
+|---|---|---|
+| `is_active` | boolean | no |
+| `name` | string | no |
 
 ### WhatsAppRequest
 

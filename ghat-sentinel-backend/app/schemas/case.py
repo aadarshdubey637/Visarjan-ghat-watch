@@ -31,6 +31,7 @@ class ReviewCase(BaseModel):
     assigned_to: str | None
     notes: str
     resolution_summary: str | None
+    created_by: str | None = None
 
 
 class CaseList(Page):

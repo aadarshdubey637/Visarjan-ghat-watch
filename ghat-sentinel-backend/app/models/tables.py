@@ -111,6 +111,7 @@ class ReviewCase(Base):
     assigned_to: Mapped[str | None] = mapped_column(String(120))
     notes: Mapped[str] = mapped_column(Text, default="")
     resolution_summary: Mapped[str | None] = mapped_column(Text)
+    created_by: Mapped[str | None] = mapped_column(String(120))  # creator's email
 
     links: Mapped[list["CaseReading"]] = relationship(cascade="all, delete-orphan", lazy="selectin")
 
@@ -150,3 +151,15 @@ class DataSource(Base):
     valid_row_count: Mapped[int] = mapped_column(Integer)
     invalid_row_count: Mapped[int] = mapped_column(Integer)
     validation_report: Mapped[dict] = mapped_column(JSON)
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)  # usr_<10 hex>
+    email: Mapped[str] = mapped_column(String(254), unique=True, index=True)
+    name: Mapped[str] = mapped_column(String(80))
+    role: Mapped[str] = mapped_column(String(20))
+    password_hash: Mapped[str] = mapped_column(String(300))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime)
