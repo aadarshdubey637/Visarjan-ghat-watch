@@ -9,6 +9,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    LargeBinary,
     String,
     Text,
     UniqueConstraint,
@@ -182,4 +183,45 @@ class Message(Base):
     provider_message_id: Mapped[str | None] = mapped_column(String(200))
     sent_by: Mapped[str] = mapped_column(String(254))
     brief_id: Mapped[str | None] = mapped_column(String(40))
+    created_at: Mapped[datetime] = mapped_column(DateTime, index=True)
+
+
+class Place(Base):
+    """A map point: an immersion ghat or kund, a hotspot or a water body. Coordinates are set by people, never invented
+    from the readings: `location_source` says where they came from and `verified` whether an officer confirmed them."""
+
+    __tablename__ = "places"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)  # pl_<10 hex>
+    name: Mapped[str] = mapped_column(String(200))
+    kind: Mapped[str] = mapped_column(String(20), index=True)  # ghat | kund | hotspot | water_body
+    latitude: Mapped[float] = mapped_column(Float)
+    longitude: Mapped[float] = mapped_column(Float)
+    ghat_id: Mapped[str | None] = mapped_column(ForeignKey("ghats.id"), index=True)
+    description: Mapped[str | None] = mapped_column(Text)
+    location_source: Mapped[str] = mapped_column(String(30))  # approximate_demo | officer | survey
+    verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_by: Mapped[str | None] = mapped_column(String(254))
+    created_at: Mapped[datetime] = mapped_column(DateTime)
+
+
+class EvidenceFile(Base):
+    """An uploaded site photo or lab/report file. Stored in the database so it survives ephemeral hosting disks."""
+
+    __tablename__ = "evidence_files"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)  # ev_<10 hex>
+    kind: Mapped[str] = mapped_column(String(10), index=True)  # image | report
+    filename: Mapped[str] = mapped_column(String(200))
+    content_type: Mapped[str] = mapped_column(String(80))  # sniffed from the bytes, never taken from the client
+    size_bytes: Mapped[int] = mapped_column(Integer)
+    sha256: Mapped[str] = mapped_column(String(64))
+    data: Mapped[bytes] = mapped_column(LargeBinary, deferred=True)
+    ghat_id: Mapped[str | None] = mapped_column(ForeignKey("ghats.id"), index=True)
+    place_id: Mapped[str | None] = mapped_column(ForeignKey("places.id"), index=True)
+    latitude: Mapped[float | None] = mapped_column(Float)
+    longitude: Mapped[float | None] = mapped_column(Float)
+    note: Mapped[str | None] = mapped_column(Text)
+    uploaded_by: Mapped[str] = mapped_column(String(254))
     created_at: Mapped[datetime] = mapped_column(DateTime, index=True)

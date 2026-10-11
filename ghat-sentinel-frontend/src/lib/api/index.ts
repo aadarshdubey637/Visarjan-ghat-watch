@@ -8,3 +8,4 @@ export * from "./cases";
 export * from "./reports";
 export * from "./auth";
 export * from "./messaging";
+export * from "./places";

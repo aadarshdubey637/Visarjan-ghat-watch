@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, ClipboardList, FileText, Gauge, Layers, ListOrdered, Send, ShieldCheck, Sparkles, UserCog, Users, type LucideIcon } from "lucide-react";
+import { BarChart3, BookOpen, ClipboardList, FileText, Gauge, Layers, ListOrdered, MapPin, Send, Upload, ShieldCheck, Sparkles, UserCog, Users, type LucideIcon } from "lucide-react";
 import type { Role } from "./types";
 
 export const STAFF_ROLES: Role[] = ["officer", "worker", "developer", "demo"];
@@ -13,6 +13,8 @@ const RULES: Rule[] = [
   { prefix: "/login", roles: "public" },
   { prefix: "/register", roles: "public" },
   { prefix: "/citizen", roles: "public" },
+  { prefix: "/map", roles: "public" },
+  { prefix: "/uploads", roles: ["officer", "worker", "developer"] },
   { prefix: "/settings", roles: ["developer"] },
   { prefix: "/team", roles: ["officer", "developer"] },
   { prefix: "/analytics", roles: ["officer", "developer"] },
@@ -44,10 +46,12 @@ export interface NavItem { href: string; key: string; icon: LucideIcon; label?: 
 const OVERVIEW: NavItem = { href: "/", key: "nav.overview", icon: Gauge };
 const GHATS: NavItem = { href: "/ghats", key: "nav.ghats", icon: Layers };
 const CITIZEN: NavItem = { href: "/citizen", key: "nav.citizen", icon: Users };
+const MAP: NavItem = { href: "/map", key: "nav.map", icon: MapPin };
+const UPLOADS: NavItem = { href: "/uploads", key: "nav.uploads", icon: Upload };
 export function navFor(role: Role): NavItem[] {
   if (role === "demo") return navFor("officer").filter((n) => n.href !== "/team");
-  if (role === "citizen") return [CITIZEN];
-  if (role === "worker") return [{ href: "/cases", key: "nav.mycases", icon: ClipboardList }, GHATS, CITIZEN];
+  if (role === "citizen") return [CITIZEN, MAP];
+  if (role === "worker") return [{ href: "/cases", key: "nav.mycases", icon: ClipboardList }, GHATS, MAP, UPLOADS, CITIZEN];
   const officer: NavItem[] = [
     OVERVIEW, GHATS,
     { href: "/analytics", key: "nav.analytics", icon: BarChart3 },
@@ -55,6 +59,7 @@ export function navFor(role: Role): NavItem[] {
     { href: "/intelligence", key: "nav.intelligence", icon: Sparkles },
     { href: "/cases", key: "nav.cases", icon: ClipboardList },
     { href: "/reports", key: "nav.reports", icon: FileText },
+    MAP, UPLOADS,
     { href: "/messages", key: "nav.messages", icon: Send },
     { href: "/team", key: "nav.team", icon: UserCog },
     { href: "/methodology", key: "nav.methodology", icon: BookOpen },

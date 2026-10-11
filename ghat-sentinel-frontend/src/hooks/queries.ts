@@ -11,6 +11,7 @@ function useStaffEnabled() { return useAuth().staff; }
 export const useHealth = () => useQuery({ queryKey: ["health"], queryFn: ({ signal }) => api.getHealth(signal), refetchInterval: 60_000, staleTime: 30_000 });
 export const useCitizenGhats = () => useQuery({ queryKey: ["citizen-ghats"], queryFn: ({ signal }) => api.getCitizenGhats(signal) });
 export const useGuide = (lang: Lang) => useQuery({ queryKey: ["guide", lang], queryFn: ({ signal }) => api.getGuide(lang, signal) });
+export const usePlaces = () => useQuery({ queryKey: ["places"], queryFn: ({ signal }) => api.getPlaces(signal), staleTime: 60_000 });
 export const useResources = () => useQuery({ queryKey: ["resources"], queryFn: ({ signal }) => api.getResources(signal) });
 
 // ── staff only ─────────────────────────────────────────────────────────────────────────

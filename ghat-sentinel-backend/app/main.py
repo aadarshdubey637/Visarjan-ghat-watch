@@ -6,10 +6,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app import database
-from app.api.routes import analytics, auth, brief, cases, citizen, criteria, ghats, health, messaging, predict, reports
+from app.api.routes import (analytics, auth, brief, cases, citizen, criteria, evidence, ghats, health, messaging, places,
+                            predict, reports, uploads)
 from app.config import ensure_jwt_secret, settings
 from app.exceptions import install_exception_handlers
 from app.services import demo, ingestion, users
+from app.services import places as places_svc
 
 logging.basicConfig(level=settings.LOG_LEVEL, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("ghat_sentinel")
@@ -32,6 +34,8 @@ async def lifespan(app: FastAPI):
                             "scripts/seed_database.py.", settings.raw_data_dir / ingestion.BHOPAL_FILE)
     with database.SessionLocal() as db:
         demo.seed_demo(db)
+    with database.SessionLocal() as db:
+        places_svc.seed_places(db)
     yield
 
 
@@ -60,13 +64,14 @@ app.add_middleware(CORSMiddleware, **cors_options())
 @app.middleware("http")
 async def limit_request_size(request: Request, call_next):
     length = request.headers.get("content-length")
-    if length and length.isdigit() and int(length) > settings.MAX_REQUEST_BYTES:
+    is_upload = request.url.path.startswith((f"{settings.API_PREFIX}/evidence", f"{settings.API_PREFIX}/uploads"))
+    if length and length.isdigit() and int(length) > (settings.MAX_UPLOAD_BYTES if is_upload else settings.MAX_REQUEST_BYTES):
         return JSONResponse(status_code=413, content={"error": {"code": "REQUEST_TOO_LARGE",
                                                                 "message": "Request body is too large."}})
     return await call_next(request)
 
 
-for module in (health, auth, ghats, analytics, criteria, predict, brief, citizen, cases, reports, messaging):
+for module in (health, auth, ghats, analytics, criteria, predict, brief, citizen, cases, reports, messaging, places, evidence, uploads):
     app.include_router(module.router, prefix=settings.API_PREFIX)
 app.include_router(auth.users_router, prefix=settings.API_PREFIX)
 

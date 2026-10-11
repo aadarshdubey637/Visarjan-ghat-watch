@@ -71,8 +71,9 @@ export async function request<T>(path: string, opts: RequestOpts = {}): Promise<
   try {
     const res = await fetch(`${API_ROOT}${path}${qs(opts.query)}`, {
       method: opts.method ?? "GET",
-      headers: { ...(opts.body !== undefined ? { "Content-Type": "application/json" } : {}), ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}) },
-      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+      // FormData (file uploads) sets its own multipart boundary header
+      headers: { ...(opts.body !== undefined && !(opts.body instanceof FormData) ? { "Content-Type": "application/json" } : {}), ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}) },
+      body: opts.body === undefined ? undefined : opts.body instanceof FormData ? opts.body : JSON.stringify(opts.body),
       signal: ctrl.signal,
     });
     if (!res.ok) {

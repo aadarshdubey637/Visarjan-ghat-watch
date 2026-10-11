@@ -173,3 +173,20 @@ export interface MessageLogItem {
   id: string; channel: MessageChannel; recipient: string; subject: string | null; status: "sent" | "failed" | "dry_run";
   error: string | null; provider_message_id: string | null; sent_by: string; brief_id: string | null; created_at: string;
 }
+
+export type PlaceKind = "ghat" | "kund" | "hotspot" | "water_body";
+export interface Place {
+  id: string; name: string; kind: PlaceKind; latitude: number; longitude: number; ghat_id: string | null; description: string | null;
+  location_source: "approximate_demo" | "officer" | "survey"; verified: boolean; active: boolean;
+  review_level: "high" | "review" | "routine" | "insufficient_data" | null; location_note: string;
+}
+export interface PlaceList { items: Place[]; unlocated_ghats: { id: string; name: string; water_body: string | null }[]; disclaimer: string }
+export interface EvidenceItem {
+  id: string; kind: "image" | "report"; filename: string; content_type: string; size_bytes: number; ghat_id: string | null; ghat_name: string | null;
+  place_id: string | null; latitude: number | null; longitude: number | null; note: string | null; uploaded_by: string; created_at: string;
+}
+export interface ImportReport {
+  committed: boolean; file_name: string; source_file: string; row_count: number; valid_row_count: number; invalid_row_count: number;
+  duplicate_count: number; new_readings: number; skipped_existing: number; new_ghats: string[]; existing_ghats: string[];
+  year_range: number[] | null; warnings: string[]; errors: string[]; exclusions: { row: number; reason: string }[];
+}
