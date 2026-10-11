@@ -53,3 +53,7 @@ def _migrate(eng) -> None:
     if "created_by" not in cols:
         with eng.begin() as conn:
             conn.execute(text("ALTER TABLE review_cases ADD COLUMN created_by VARCHAR(120)"))
+    user_cols = {c["name"] for c in inspect(eng).get_columns("users")}
+    if "phone" not in user_cols:
+        with eng.begin() as conn:
+            conn.execute(text("ALTER TABLE users ADD COLUMN phone VARCHAR(20)"))

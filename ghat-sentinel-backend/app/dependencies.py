@@ -8,12 +8,18 @@ from app.exceptions import RateLimitError
 
 _hits: dict[str, deque] = defaultdict(deque)
 _login_failures: dict[str, deque] = defaultdict(deque)
+_messaging_hits: dict[str, deque] = defaultdict(deque)
 LOGIN_MAX_FAILURES = 5
 
 
 def reset_rate_limits() -> None:
     _hits.clear()
     _login_failures.clear()
+    _messaging_hits.clear()
+
+
+def reset_messaging_limits() -> None:
+    _messaging_hits.clear()
 
 
 def _login_key(request: Request, email: str) -> str:
@@ -54,3 +60,17 @@ def ai_rate_limit(request: Request) -> None:
     if len(q) >= limit:
         raise RateLimitError("Too many AI requests. Please retry in a minute.")
     q.append(now)
+
+
+def check_messaging_allowed(user_key: str, count: int) -> None:
+    """Per-user sliding hourly window on the number of messages (recipients); in-memory, per process."""
+    limit = settings.MESSAGING_MAX_PER_HOUR
+    if limit <= 0:
+        return
+    now = time.monotonic()
+    q = _messaging_hits[user_key]
+    while q and now - q[0] > 3600:
+        q.popleft()
+    if len(q) + count > limit:
+        raise RateLimitError("Hourly message limit reached. Please retry later.")
+    q.extend([now] * count)

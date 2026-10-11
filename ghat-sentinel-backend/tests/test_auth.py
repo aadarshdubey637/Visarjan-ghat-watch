@@ -217,7 +217,7 @@ def test_officer_user_management(client):
 
     lst = client.get(f"{P}/users?role=worker", headers=off).json()
     assert {u["email"] for u in lst["items"]} == {"worker@ghat.demo", "two@ghat.demo"} and lst["total"] == 2
-    assert set(lst["items"][0]) == {"id", "email", "name", "role", "is_active", "created_at"}
+    assert set(lst["items"][0]) == {"id", "email", "name", "role", "is_active", "created_at", "phone"}
     assert client.get(f"{P}/users?role=hacker", headers=off).status_code == 422
 
     wtok = client.post(f"{P}/auth/login", json={"email": "two@ghat.demo", "password": "workerpass1"}).json()

@@ -33,6 +33,14 @@ created (`presenter@ghat.demo` for demonstrations, `officer@ghat.demo`, `worker@
 `ghat-sentinel-backend/docs/AUTH.md` for the passwords, the permission matrix and production setup. In production set
 `APP_ENV=production`, a long random `JWT_SECRET`, `DEMO_USERS=false` and bootstrap the first officer.
 
+## Sending briefs by email and WhatsApp
+
+Officers and the presenter account can send a generated brief from **AI Intelligence → Send…** (email through SMTP, WhatsApp
+through the Meta Cloud API). Every send needs a review-and-confirm step and is recorded on the **Messages** page. Setup steps
+for a Gmail app password, the WhatsApp phone number ID and the required approved template are in
+`ghat-sentinel-backend/docs/MESSAGING.md`. Put the settings in the root `.env` as `NAME=value` lines (never commit it), and set
+`MESSAGING_DRY_RUN=true` to rehearse without sending anything.
+
 ## Documentation
 
 Backend: `ghat-sentinel-backend/README.md` and `docs/` (architecture, API contract, analytics methodology, data sources, AI,

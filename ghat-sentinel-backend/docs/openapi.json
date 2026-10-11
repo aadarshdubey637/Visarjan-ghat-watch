@@ -1544,7 +1544,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/WhatsAppRequest"
+                "$ref": "#/components/schemas/app__schemas__brief__WhatsAppRequest"
               }
             }
           },
@@ -2252,6 +2252,373 @@
             "HTTPBearer": []
           }
         ]
+      }
+    },
+    "/api/v1/messaging/config": {
+      "get": {
+        "tags": [
+          "messaging"
+        ],
+        "summary": "Messaging channels status (no secrets)",
+        "operationId": "config_api_v1_messaging_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessagingConfig"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/messaging/contacts": {
+      "get": {
+        "tags": [
+          "messaging"
+        ],
+        "summary": "Active officers and workers for the recipient picker",
+        "operationId": "contacts_api_v1_messaging_contacts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/messaging/email": {
+      "post": {
+        "tags": [
+          "messaging"
+        ],
+        "summary": "Send a brief by e-mail (one message per recipient)",
+        "description": "Per-recipient failures are reported in `results`; the request itself still returns 200. 503 CHANNEL_NOT_CONFIGURED when SMTP is not set up (unless MESSAGING_DRY_RUN).",
+        "operationId": "send_email_api_v1_messaging_email_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/messaging/whatsapp": {
+      "post": {
+        "tags": [
+          "messaging"
+        ],
+        "summary": "Send a brief by WhatsApp (Meta Cloud API)",
+        "description": "Template mode is deliverable any time; text mode only inside Meta's 24-hour customer-service window. Per-recipient failures are reported in `results`.",
+        "operationId": "send_whatsapp_api_v1_messaging_whatsapp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__schemas__messaging__WhatsAppRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/messaging/log": {
+      "get": {
+        "tags": [
+          "messaging"
+        ],
+        "summary": "Audit log of sent messages, newest first",
+        "operationId": "message_log_api_v1_messaging_log_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "email",
+                    "whatsapp"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Channel"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageList"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
       }
     },
     "/api/v1/users": {
@@ -3456,6 +3823,68 @@
         ],
         "title": "ComparisonResult"
       },
+      "Contact": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "officer",
+              "worker",
+              "citizen",
+              "developer",
+              "demo"
+            ],
+            "title": "Role"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "role",
+          "email"
+        ],
+        "title": "Contact"
+      },
+      "ContactList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Contact"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "ContactList"
+      },
       "CriteriaList": {
         "properties": {
           "items": {
@@ -3673,6 +4102,74 @@
           "password"
         ],
         "title": "DemoAccount"
+      },
+      "EmailConfig": {
+        "properties": {
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "from_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Address"
+          }
+        },
+        "type": "object",
+        "required": [
+          "configured"
+        ],
+        "title": "EmailConfig"
+      },
+      "EmailRequest": {
+        "properties": {
+          "to": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "To",
+            "description": "Recipient e-mail addresses (one message is sent to each)"
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Subject"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "title": "Body"
+          },
+          "brief_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brief Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "to",
+          "subject",
+          "body"
+        ],
+        "title": "EmailRequest"
       },
       "ErrorDetail": {
         "properties": {
@@ -4413,6 +4910,155 @@
           "password"
         ],
         "title": "LoginRequest"
+      },
+      "MessageList": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MessageOut"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "items"
+        ],
+        "title": "MessageList"
+      },
+      "MessageOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "email",
+              "whatsapp"
+            ],
+            "title": "Channel"
+          },
+          "recipient": {
+            "type": "string",
+            "title": "Recipient"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "sent",
+              "failed",
+              "dry_run"
+            ],
+            "title": "Status"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "provider_message_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Message Id"
+          },
+          "sent_by": {
+            "type": "string",
+            "title": "Sent By"
+          },
+          "brief_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brief Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "channel",
+          "recipient",
+          "status",
+          "sent_by",
+          "created_at"
+        ],
+        "title": "MessageOut"
+      },
+      "MessagingConfig": {
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/EmailConfig"
+          },
+          "whatsapp": {
+            "$ref": "#/components/schemas/WhatsAppConfig"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run"
+          },
+          "max_recipients": {
+            "type": "integer",
+            "title": "Max Recipients"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "whatsapp",
+          "dry_run",
+          "max_recipients"
+        ],
+        "title": "MessagingConfig"
       },
       "Metadata": {
         "properties": {
@@ -5923,6 +6569,82 @@
         ],
         "title": "SeasonValue"
       },
+      "SendResponse": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/SendResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "sent": {
+            "type": "integer",
+            "title": "Sent"
+          },
+          "failed": {
+            "type": "integer",
+            "title": "Failed"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run"
+          }
+        },
+        "type": "object",
+        "required": [
+          "results",
+          "sent",
+          "failed",
+          "dry_run"
+        ],
+        "title": "SendResponse"
+      },
+      "SendResult": {
+        "properties": {
+          "recipient": {
+            "type": "string",
+            "title": "Recipient"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "sent",
+              "failed",
+              "dry_run"
+            ],
+            "title": "Status"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "message_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recipient",
+          "status"
+        ],
+        "title": "SendResult"
+      },
       "SourceMeta": {
         "properties": {
           "file_name": {
@@ -6489,6 +7211,19 @@
               "demo"
             ],
             "title": "Role"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone",
+            "description": "E.164-like, 8-15 digits; stored normalised"
           }
         },
         "type": "object",
@@ -6560,6 +7295,17 @@
             "type": "boolean",
             "title": "Is Active"
           },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -6602,56 +7348,61 @@
               }
             ],
             "title": "Name"
-          }
-        },
-        "type": "object",
-        "title": "UserUpdate"
-      },
-      "WhatsAppRequest": {
-        "properties": {
-          "ghat_ids": {
+          },
+          "phone": {
             "anyOf": [
               {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array",
-                "maxItems": 10
+                "type": "string",
+                "maxLength": 30
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Ghat Ids"
-          },
-          "language": {
-            "type": "string",
-            "enum": [
-              "en",
-              "hi",
-              "bilingual"
-            ],
-            "title": "Language",
-            "default": "hi"
-          },
-          "include_actions": {
-            "type": "boolean",
-            "title": "Include Actions",
-            "default": true
-          },
-          "use_ai": {
-            "type": "boolean",
-            "title": "Use Ai",
-            "default": true
-          },
-          "require_ai": {
-            "type": "boolean",
-            "title": "Require Ai",
-            "default": false
+            "title": "Phone",
+            "description": "Send null or '' to clear"
           }
         },
         "type": "object",
-        "title": "WhatsAppRequest"
+        "title": "UserUpdate"
+      },
+      "WhatsAppConfig": {
+        "properties": {
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "template",
+              "text"
+            ],
+            "title": "Mode"
+          },
+          "template_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Template Name"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language"
+          }
+        },
+        "type": "object",
+        "required": [
+          "configured",
+          "mode",
+          "language"
+        ],
+        "title": "WhatsAppConfig"
       },
       "WhatsAppResponse": {
         "properties": {
@@ -6727,6 +7478,89 @@
           "generation_mode"
         ],
         "title": "WhatsAppResponse"
+      },
+      "app__schemas__brief__WhatsAppRequest": {
+        "properties": {
+          "ghat_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ghat Ids"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi",
+              "bilingual"
+            ],
+            "title": "Language",
+            "default": "hi"
+          },
+          "include_actions": {
+            "type": "boolean",
+            "title": "Include Actions",
+            "default": true
+          },
+          "use_ai": {
+            "type": "boolean",
+            "title": "Use Ai",
+            "default": true
+          },
+          "require_ai": {
+            "type": "boolean",
+            "title": "Require Ai",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "WhatsAppRequest"
+      },
+      "app__schemas__messaging__WhatsAppRequest": {
+        "properties": {
+          "to": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "To",
+            "description": "Phone numbers, e.g. '+91 98765-43210' or '919876543210'"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 1500,
+            "minLength": 1,
+            "title": "Body"
+          },
+          "brief_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brief Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "to",
+          "body"
+        ],
+        "title": "WhatsAppRequest"
       }
     },
     "securitySchemes": {

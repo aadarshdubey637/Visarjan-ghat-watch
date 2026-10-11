@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, ClipboardList, FileText, Gauge, Layers, ListOrdered, ShieldCheck, Sparkles, UserCog, Users, type LucideIcon } from "lucide-react";
+import { BarChart3, BookOpen, ClipboardList, FileText, Gauge, Layers, ListOrdered, Send, ShieldCheck, Sparkles, UserCog, Users, type LucideIcon } from "lucide-react";
 import type { Role } from "./types";
 
 export const STAFF_ROLES: Role[] = ["officer", "worker", "developer", "demo"];
@@ -19,6 +19,7 @@ const RULES: Rule[] = [
   { prefix: "/prioritization", roles: ["officer", "developer"] },
   { prefix: "/intelligence", roles: ["officer", "developer"] },
   { prefix: "/reports", roles: ["officer", "developer"] },
+  { prefix: "/messages", roles: ["officer", "developer"] },
   { prefix: "/methodology", roles: ["officer", "developer"] },
   { prefix: "/ghats", roles: ["officer", "worker", "developer"] },
   { prefix: "/cases", roles: ["officer", "worker", "developer"] },
@@ -54,6 +55,7 @@ export function navFor(role: Role): NavItem[] {
     { href: "/intelligence", key: "nav.intelligence", icon: Sparkles },
     { href: "/cases", key: "nav.cases", icon: ClipboardList },
     { href: "/reports", key: "nav.reports", icon: FileText },
+    { href: "/messages", key: "nav.messages", icon: Send },
     { href: "/team", key: "nav.team", icon: UserCog },
     { href: "/methodology", key: "nav.methodology", icon: BookOpen },
     CITIZEN,

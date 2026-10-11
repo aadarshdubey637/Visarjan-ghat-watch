@@ -39,3 +39,40 @@ services:
         sync: false
       - key: ANTHROPIC_MODEL
         sync: false
+      # Messaging (docs/MESSAGING.md): secrets are entered in the Render dashboard
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: SMTP_STARTTLS
+        value: "true"
+      - key: SMTP_USE_SSL
+        value: "false"
+      - key: SMTP_TIMEOUT_SECONDS
+        value: "15"
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_API_VERSION
+        value: "v21.0"
+      - key: WHATSAPP_MODE
+        value: "template"
+      - key: WHATSAPP_TEMPLATE_NAME
+        sync: false
+      - key: WHATSAPP_TEMPLATE_LANG
+        value: "en"
+      - key: WHATSAPP_TIMEOUT_SECONDS
+        value: "15"
+      - key: MESSAGING_DRY_RUN
+        value: "false"
+      - key: MESSAGING_MAX_RECIPIENTS
+        value: "20"
+      - key: MESSAGING_MAX_PER_HOUR
+        value: "60"

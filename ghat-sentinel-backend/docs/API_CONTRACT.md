@@ -254,7 +254,7 @@ Request body: `BriefRequest`
 ## `POST /api/v1/brief/whatsapp`
 Copyable WhatsApp-ready brief
 
-Request body: `WhatsAppRequest`
+Request body: `app__schemas__brief__WhatsAppRequest`
 
 | Status | Response |
 |---|---|
@@ -386,6 +386,72 @@ Request body: `ReportRequest`
 | 422 | `ErrorResponse` |
 | 401 | `ErrorResponse` |
 | 403 | `ErrorResponse` |
+
+## `GET /api/v1/messaging/config`
+Messaging channels status (no secrets)
+
+| Status | Response |
+|---|---|
+| 200 | `MessagingConfig` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
+
+## `GET /api/v1/messaging/contacts`
+Active officers and workers for the recipient picker
+
+| Status | Response |
+|---|---|
+| 200 | `ContactList` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
+
+## `POST /api/v1/messaging/email`
+Send a brief by e-mail (one message per recipient)
+
+Per-recipient failures are reported in `results`; the request itself still returns 200. 503 CHANNEL_NOT_CONFIGURED when SMTP is not set up (unless MESSAGING_DRY_RUN).
+
+Request body: `EmailRequest`
+
+| Status | Response |
+|---|---|
+| 200 | `SendResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
+| 422 | `ErrorResponse` |
+| 429 | `ErrorResponse` |
+| 503 | `ErrorResponse` |
+
+## `POST /api/v1/messaging/whatsapp`
+Send a brief by WhatsApp (Meta Cloud API)
+
+Template mode is deliverable any time; text mode only inside Meta's 24-hour customer-service window. Per-recipient failures are reported in `results`.
+
+Request body: `app__schemas__messaging__WhatsAppRequest`
+
+| Status | Response |
+|---|---|
+| 200 | `SendResponse` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
+| 422 | `ErrorResponse` |
+| 429 | `ErrorResponse` |
+| 503 | `ErrorResponse` |
+
+## `GET /api/v1/messaging/log`
+Audit log of sent messages, newest first
+
+| Parameter | In | Required | Type |
+|---|---|---|---|
+| `channel` | query | no | string |
+| `limit` | query | no | integer |
+| `offset` | query | no | integer |
+
+| Status | Response |
+|---|---|
+| 200 | `MessageList` |
+| 401 | `ErrorResponse` |
+| 403 | `ErrorResponse` |
+| 422 | `ErrorResponse` |
 
 ## `GET /api/v1/users`
 List users (officer, developer)
@@ -597,6 +663,22 @@ Request body: `UserUpdate`
 | `sample_period` | string | no |
 | `relative_exceedance` | number | no |
 
+### Contact
+
+| Field | Type | Required |
+|---|---|---|
+| `id` | string | yes |
+| `name` | string | yes |
+| `role` | officer|worker|citizen|developer|demo | yes |
+| `email` | string | yes |
+| `phone` | string | no |
+
+### ContactList
+
+| Field | Type | Required |
+|---|---|---|
+| `items` | array | yes |
+
 ### CriteriaList
 
 | Field | Type | Required |
@@ -640,6 +722,22 @@ Request body: `UserUpdate`
 | `role` | officer|worker|citizen|developer|demo | yes |
 | `email` | string | yes |
 | `password` | string | yes |
+
+### EmailConfig
+
+| Field | Type | Required |
+|---|---|---|
+| `configured` | boolean | yes |
+| `from_address` | string | no |
+
+### EmailRequest
+
+| Field | Type | Required |
+|---|---|---|
+| `to` | array | yes |
+| `subject` | string | yes |
+| `body` | string | yes |
+| `brief_id` | string | no |
 
 ### ErrorDetail
 
@@ -789,6 +887,39 @@ Request body: `UserUpdate`
 |---|---|---|
 | `email` | string | yes |
 | `password` | string | yes |
+
+### MessageList
+
+| Field | Type | Required |
+|---|---|---|
+| `total` | integer | yes |
+| `limit` | integer | yes |
+| `offset` | integer | yes |
+| `items` | array | yes |
+
+### MessageOut
+
+| Field | Type | Required |
+|---|---|---|
+| `id` | string | yes |
+| `channel` | email|whatsapp | yes |
+| `recipient` | string | yes |
+| `subject` | string | no |
+| `status` | sent|failed|dry_run | yes |
+| `error` | string | no |
+| `provider_message_id` | string | no |
+| `sent_by` | string | yes |
+| `brief_id` | string | no |
+| `created_at` | string (format date-time) | yes |
+
+### MessagingConfig
+
+| Field | Type | Required |
+|---|---|---|
+| `email` | EmailConfig | yes |
+| `whatsapp` | WhatsAppConfig | yes |
+| `dry_run` | boolean | yes |
+| `max_recipients` | integer | yes |
 
 ### Metadata
 
@@ -1059,6 +1190,24 @@ Request body: `UserUpdate`
 | `reading_ids` | array | no |
 | `n_sites` | integer | no |
 
+### SendResponse
+
+| Field | Type | Required |
+|---|---|---|
+| `results` | array | yes |
+| `sent` | integer | yes |
+| `failed` | integer | yes |
+| `dry_run` | boolean | yes |
+
+### SendResult
+
+| Field | Type | Required |
+|---|---|---|
+| `recipient` | string | yes |
+| `status` | sent|failed|dry_run | yes |
+| `error` | string | no |
+| `message_id` | string | no |
+
 ### SourceMeta
 
 | Field | Type | Required |
@@ -1160,6 +1309,7 @@ Request body: `UserUpdate`
 | `email` | string | yes |
 | `password` | string | yes |
 | `role` | officer|worker|citizen|developer|demo | yes |
+| `phone` | string | no |
 
 ### UserList
 
@@ -1179,6 +1329,7 @@ Request body: `UserUpdate`
 | `name` | string | yes |
 | `role` | officer|worker|citizen|developer|demo | yes |
 | `is_active` | boolean | yes |
+| `phone` | string | no |
 | `created_at` | string (format date-time) | yes |
 
 ### UserUpdate
@@ -1187,16 +1338,16 @@ Request body: `UserUpdate`
 |---|---|---|
 | `is_active` | boolean | no |
 | `name` | string | no |
+| `phone` | string | no |
 
-### WhatsAppRequest
+### WhatsAppConfig
 
 | Field | Type | Required |
 |---|---|---|
-| `ghat_ids` | array | no |
-| `language` | en|hi|bilingual | no |
-| `include_actions` | boolean | no |
-| `use_ai` | boolean | no |
-| `require_ai` | boolean | no |
+| `configured` | boolean | yes |
+| `mode` | template|text | yes |
+| `template_name` | string | no |
+| `language` | string | yes |
 
 ### WhatsAppResponse
 
@@ -1209,4 +1360,22 @@ Request body: `UserUpdate`
 | `generated_at` | string | yes |
 | `generation_mode` | template|ai | yes |
 | `ai_status` | string | no |
+| `brief_id` | string | no |
+
+### app__schemas__brief__WhatsAppRequest
+
+| Field | Type | Required |
+|---|---|---|
+| `ghat_ids` | array | no |
+| `language` | en|hi|bilingual | no |
+| `include_actions` | boolean | no |
+| `use_ai` | boolean | no |
+| `require_ai` | boolean | no |
+
+### app__schemas__messaging__WhatsAppRequest
+
+| Field | Type | Required |
+|---|---|---|
+| `to` | array | yes |
+| `body` | string | yes |
 | `brief_id` | string | no |

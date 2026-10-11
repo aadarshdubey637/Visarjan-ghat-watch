@@ -74,6 +74,9 @@ automatically when the database is empty and `data/raw/` exists.
 | `DEMO_USERS` | default `true`; demo accounts exist only when also `APP_ENV=development` |
 | `BOOTSTRAP_OFFICER_EMAIL`, `BOOTSTRAP_OFFICER_PASSWORD` | optional; creates the first officer at startup if missing |
 | `PRESENTER_EMAIL`, `PRESENTER_PASSWORD` | optional; creates a `demo`-role presenter account at startup in any environment if missing. It can create cases, briefs and reports. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_STARTTLS`, `SMTP_USE_SSL`, `SMTP_TIMEOUT_SECONDS` | optional e-mail sending of briefs (SMTP). Secrets never leave the server. See [docs/MESSAGING.md](docs/MESSAGING.md). |
+| `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_API_VERSION`, `WHATSAPP_MODE`, `WHATSAPP_TEMPLATE_NAME`, `WHATSAPP_TEMPLATE_LANG`, `WHATSAPP_TIMEOUT_SECONDS` | optional WhatsApp Cloud API sending (`template` or `text` mode). |
+| `MESSAGING_DRY_RUN`, `MESSAGING_MAX_RECIPIENTS`, `MESSAGING_MAX_PER_HOUR` | log-only mode, recipients per request (20) and per-user hourly cap (60) |
 
 ## Authentication
 
@@ -109,7 +112,7 @@ docs/           architecture, API contract, methodology, data sources, AI, deplo
 
 [ARCHITECTURE](docs/ARCHITECTURE.md) - [API_CONTRACT](docs/API_CONTRACT.md) -
 [FRONTEND_INTEGRATION](docs/FRONTEND_INTEGRATION.md) - [ANALYTICS_METHODOLOGY](docs/ANALYTICS_METHODOLOGY.md) -
-[DATA_SOURCES](docs/DATA_SOURCES.md) - [AI_INTEGRATION](docs/AI_INTEGRATION.md) - [DEPLOYMENT](docs/DEPLOYMENT.md)
+[DATA_SOURCES](docs/DATA_SOURCES.md) - [AI_INTEGRATION](docs/AI_INTEGRATION.md) - [DEPLOYMENT](docs/DEPLOYMENT.md) - [MESSAGING](docs/MESSAGING.md)
 
 Regenerate the OpenAPI file with `python scripts/export_openapi.py` (writes `docs/openapi.json`).
 

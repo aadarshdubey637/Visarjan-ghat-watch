@@ -11,6 +11,7 @@ import { useUsers } from "@/hooks/queries";
 import { createUser, patchUser } from "@/lib/api";
 import { ApiError, friendlyMessage } from "@/lib/api/client";
 import { ROLE_LABEL } from "@/lib/access";
+import { normalizePhone } from "@/lib/messaging";
 import { fmtDateTime } from "@/lib/domain";
 import type { Role, UserRecord } from "@/lib/types";
 
@@ -23,13 +24,13 @@ const randomPassword = () => {
 export default function TeamPage() {
   const { user } = useAuth(); const qc = useQueryClient();
   const users = useUsers();
-  const [name, setName] = useState(""); const [email, setEmail] = useState(""); const [role, setRole] = useState<Role>("worker"); const [password, setPassword] = useState("");
+  const [name, setName] = useState(""); const [email, setEmail] = useState(""); const [phone, setPhone] = useState(""); const [role, setRole] = useState<Role>("worker"); const [password, setPassword] = useState("");
   const [created, setCreated] = useState<{ email: string; password: string } | null>(null);
   const [formErr, setFormErr] = useState<string | null>(null);
 
   const add = useMutation({
-    mutationFn: () => createUser({ name: name.trim(), email: email.trim(), password, role }),
-    onSuccess: (u) => { setCreated({ email: u.email, password }); setName(""); setEmail(""); setPassword(""); setFormErr(null); qc.invalidateQueries({ queryKey: ["users"] }); toast.success(`${ROLE_LABEL[u.role]} account created`); },
+    mutationFn: () => createUser({ name: name.trim(), email: email.trim(), password, role, phone: phone.trim() || null }),
+    onSuccess: (u) => { setCreated({ email: u.email, password }); setName(""); setEmail(""); setPhone(""); setPassword(""); setFormErr(null); qc.invalidateQueries({ queryKey: ["users"] }); toast.success(`${ROLE_LABEL[u.role]} account created`); },
     onError: (e) => setFormErr(e instanceof ApiError && e.code === "EMAIL_TAKEN" ? "An account with this email already exists." : friendlyMessage(e)),
   });
   const toggle = useMutation({
@@ -37,7 +38,7 @@ export default function TeamPage() {
     onSuccess: (u) => { qc.invalidateQueries({ queryKey: ["users"] }); toast.success(`${u.name} ${u.is_active ? "re-activated" : "deactivated"}`); },
     onError: (e) => toast.error(friendlyMessage(e)),
   });
-  const canAdd = name.trim().length >= 2 && /\S+@\S+\.\S+/.test(email) && password.length >= 8;
+  const canAdd = name.trim().length >= 2 && /\S+@\S+\.\S+/.test(email) && password.length >= 8 && (!phone.trim() || normalizePhone(phone) !== null);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -48,6 +49,7 @@ export default function TeamPage() {
           <form className="space-y-3 p-4" noValidate onSubmit={(e) => { e.preventDefault(); if (canAdd && !add.isPending) add.mutate(); }}>
             <Field label="Full name" htmlFor="tn"><Input id="tn" value={name} onChange={(e) => setName(e.target.value)} autoComplete="off" /></Field>
             <Field label="Email" htmlFor="te"><Input id="te" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="off" /></Field>
+            <Field label="WhatsApp number (optional)" htmlFor="tph" hint="With country code, e.g. +91 98765 43210. Used only to message this person from the platform." error={phone.trim() && normalizePhone(phone) === null ? "Enter 8-15 digits with the country code." : undefined}><Input id="tph" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="off" /></Field>
             <Field label="Role" htmlFor="tr"><Select id="tr" value={role} onChange={(e) => setRole(e.target.value as Role)}>
               <option value="worker">Field worker</option><option value="officer">Municipal officer</option>{user?.role === "developer" && <option value="developer">Developer</option>}</Select></Field>
             <Field label="Temporary password" htmlFor="tp" hint="At least 8 characters. Share it with the person privately.">
@@ -71,7 +73,7 @@ export default function TeamPage() {
             <div className="overflow-x-auto"><table className="w-full min-w-[520px] text-sm"><thead><tr className="border-b border-line text-left text-xs text-ink-muted"><th className="p-3">Name</th><th className="p-3">Role</th><th className="p-3">Status</th><th className="p-3">Added</th><th className="p-3"><span className="sr-only">Actions</span></th></tr></thead>
               <tbody>{users.data.items.filter((u) => u.role !== "citizen").map((u) => (
                 <tr key={u.id} className="border-b border-line/60">
-                  <td className="p-3"><p className="font-medium">{u.name}</p><p className="text-xs text-ink-muted">{u.email}</p></td>
+                  <td className="p-3"><p className="font-medium">{u.name}</p><p className="text-xs text-ink-muted">{u.email}{u.phone ? ` · +${u.phone.replace(/^\+/, "")}` : ""}</p></td>
                   <td className="p-3"><Chip tone={u.role === "officer" ? "info" : u.role === "developer" ? "warn" : "good"}>{ROLE_LABEL[u.role]}</Chip></td>
                   <td className="p-3"><Chip tone={u.is_active ? "good" : "neutral"}>{u.is_active ? "Active" : "Deactivated"}</Chip></td>
                   <td className="p-3 text-xs">{fmtDateTime(u.created_at)}</td>

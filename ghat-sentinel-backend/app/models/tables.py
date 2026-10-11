@@ -163,3 +163,23 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(300))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime)
+
+    phone: Mapped[str | None] = mapped_column(String(20))  # digits with optional leading "+"
+
+
+class Message(Base):
+    """Audit log: one row per recipient of an outbound e-mail / WhatsApp message."""
+
+    __tablename__ = "messages"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)  # msg_<10 hex>
+    channel: Mapped[str] = mapped_column(String(20), index=True)  # email | whatsapp
+    recipient: Mapped[str] = mapped_column(String(254))
+    subject: Mapped[str | None] = mapped_column(String(150))
+    body: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(20))  # sent | failed | dry_run
+    error: Mapped[str | None] = mapped_column(String(300))  # sanitised, never contains secrets
+    provider_message_id: Mapped[str | None] = mapped_column(String(200))
+    sent_by: Mapped[str] = mapped_column(String(254))
+    brief_id: Mapped[str | None] = mapped_column(String(40))
+    created_at: Mapped[datetime] = mapped_column(DateTime, index=True)

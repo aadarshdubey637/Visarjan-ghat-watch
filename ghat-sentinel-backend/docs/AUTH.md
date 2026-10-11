@@ -15,6 +15,7 @@ JWT bearer authentication with five roles (`demo` is a presenter role with offic
 | `POST /cases`, `PATCH /cases/{id}` (any case), `GET /cases`, `GET /cases/{id}` (all) | - | - | - | yes | yes | yes |
 | `GET /cases`, `GET /cases/{id}` | - | - | own assigned only | all | all | all |
 | `PATCH /cases/{id}` | - | - | own assigned only; `notes`, `resolution_summary`, `status` (to `under_review` or `resolved`) | any | any | any |
+| `GET /messaging/config`, `/contacts`, `/log`, `POST /messaging/email`, `/messaging/whatsapp` (see MESSAGING.md) | - | - | - | yes | yes | yes |
 | `GET /users`, `POST /users`, `PATCH /users/{id}` | - | - | - | yes (no developer accounts) | yes | - |
 
 Worker rules: cases are matched on `assigned_to` equal (case-insensitive) to the worker's email or name. A case not

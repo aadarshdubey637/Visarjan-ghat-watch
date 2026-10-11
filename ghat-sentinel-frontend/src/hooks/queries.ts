@@ -54,6 +54,14 @@ export const useUsers = (role?: Role) => {
   return useQuery({ queryKey: ["users", role], queryFn: ({ signal }) => api.listUsers({ role }, signal), enabled: on, staleTime: 30_000 });
 };
 
+// ── messaging (officers, presenters, developers) ──────────────────────────────────────────
+function useCanMessage() { const { user } = useAuth(); return user?.role === "officer" || user?.role === "developer" || user?.role === "demo"; }
+export const useMessagingConfig = () => { const on = useCanMessage(); return useQuery({ queryKey: ["messaging-config"], queryFn: ({ signal }) => api.getMessagingConfig(signal), enabled: on, staleTime: 60_000 }); };
+export const useContacts = () => { const on = useCanMessage(); return useQuery({ queryKey: ["contacts"], queryFn: ({ signal }) => api.getContacts(signal), enabled: on, staleTime: 30_000 }); };
+export const useMessageLog = (p: { channel?: "email" | "whatsapp"; limit?: number; offset?: number } = {}) => {
+  const on = useCanMessage(); return useQuery({ queryKey: ["message-log", p], queryFn: ({ signal }) => api.getMessageLog(p, signal), enabled: on, placeholderData: (prev) => prev });
+};
+
 /** Parameters that have a CPCB limit under the selected class, from /metadata (not hardcoded). */
 export function evaluableParameters(meta: { parameters: { parameter: string; cpcb_classes_with_limit: string[] }[] } | undefined, cls: string = "B") {
   return meta?.parameters.filter((p) => p.cpcb_classes_with_limit.includes(cls)).map((p) => p.parameter) ?? [];

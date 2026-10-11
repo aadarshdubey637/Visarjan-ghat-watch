@@ -65,7 +65,7 @@ def create_user(body: UserCreate, actor: AuthUser = Depends(user_admins), db: Se
     allowed = {"worker", "officer"} | ({"developer"} if actor.role == "developer" else set())
     if body.role not in allowed:
         raise ForbiddenError(f"You are not allowed to create '{body.role}' accounts.")
-    return users.to_out(users.create_user(db, body.name, body.email, body.password, body.role))
+    return users.to_out(users.create_user(db, body.name, body.email, body.password, body.role, body.phone))
 
 
 @users_router.patch("/{user_id}", response_model=UserOut, summary="Activate/deactivate or rename a user",
@@ -82,5 +82,7 @@ def update_user(user_id: str, body: UserUpdate, actor: AuthUser = Depends(user_a
         target.is_active = body.is_active
     if body.name is not None:
         target.name = body.name.strip()
+    if "phone" in body.model_fields_set:
+        target.phone = body.phone  # null / '' clears it
     db.commit()
     return users.to_out(target)

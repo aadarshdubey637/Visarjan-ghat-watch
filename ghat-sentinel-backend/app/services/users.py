@@ -57,7 +57,7 @@ def demo_enabled() -> bool:
 
 
 def to_out(u: User) -> UserOut:
-    return UserOut(id=u.id, email=u.email, name=u.name, role=u.role, is_active=u.is_active,
+    return UserOut(id=u.id, email=u.email, name=u.name, role=u.role, is_active=u.is_active, phone=u.phone,
                    created_at=u.created_at.replace(tzinfo=timezone.utc))
 
 
@@ -65,12 +65,14 @@ def get_by_email(db: Session, email: str) -> User | None:
     return db.scalar(select(User).where(User.email == normalise_email(email)))
 
 
-def create_user(db: Session, name: str, email: str, password: str, role: str) -> User:
+def create_user(db: Session, name: str, email: str, password: str, role: str,
+                phone: str | None = None) -> User:
     email = normalise_email(email)
     if get_by_email(db, email):
         raise EmailTakenError("An account with this email already exists.")
     user = User(id=f"usr_{uuid.uuid4().hex[:10]}", email=email, name=name.strip(), role=role,
-                password_hash=hash_password(password), is_active=True, created_at=utcnow())
+                password_hash=hash_password(password), is_active=True, created_at=utcnow(),
+                phone=phone)
     try:
         db.add(user)
         db.commit()

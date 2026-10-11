@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app import database
-from app.api.routes import analytics, auth, brief, cases, citizen, criteria, ghats, health, predict, reports
+from app.api.routes import analytics, auth, brief, cases, citizen, criteria, ghats, health, messaging, predict, reports
 from app.config import ensure_jwt_secret, settings
 from app.exceptions import install_exception_handlers
 from app.services import demo, ingestion, users
@@ -58,7 +58,7 @@ async def limit_request_size(request: Request, call_next):
     return await call_next(request)
 
 
-for module in (health, auth, ghats, analytics, criteria, predict, brief, citizen, cases, reports):
+for module in (health, auth, ghats, analytics, criteria, predict, brief, citizen, cases, reports, messaging):
     app.include_router(module.router, prefix=settings.API_PREFIX)
 app.include_router(auth.users_router, prefix=settings.API_PREFIX)
 

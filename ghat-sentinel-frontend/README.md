@@ -49,6 +49,7 @@ Both services together with Docker (from the repository root): `docker compose u
 | `npm run check:api` | calls every backend endpoint the UI uses against a running backend and checks the response shapes |
 | `npm run e2e:smoke` | headless Chrome visits every page at desktop and mobile size and fails on console errors or 5xx |
 | `node scripts/e2e-roles.mjs` | headless Chrome walks the visitor, officer, worker, community and developer journeys (needs demo accounts) |
+| `node scripts/e2e-messaging.mjs` | drives the Send dialog and Messages page; refuses to run unless the backend is in `MESSAGING_DRY_RUN` mode |
 | `npm run build` | production build |
 
 The browser scripts use your installed Chrome or Edge through `playwright-core` (no browser download). Set
@@ -88,7 +89,7 @@ text, never colour alone.
   move it to an httpOnly cookie behind a same-site proxy.
 - There is no "change password" screen yet (the API has no endpoint for it); officers set a temporary password when they
   create a worker.
-- Email and WhatsApp sending are not implemented; briefs are copied or downloaded and shared manually.
+- Sending uses the backend's SMTP and WhatsApp Cloud API settings. WhatsApp messages go through one approved template (about 1,000 characters), so long briefs are shortened; the review step shows exactly what will be sent.
 - Only navigation and key labels are translated to Hindi; backend-generated briefs and the citizen guide are returned in the
   requested language.
 - No coordinates exist in the source data, so there is no map.

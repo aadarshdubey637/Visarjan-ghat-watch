@@ -22,6 +22,20 @@ def _valid_email(value: str) -> str:
     return value
 
 
+def normalise_phone(value: str) -> str:
+    """'+91 98765-43210' -> '+919876543210'; digits only otherwise. 8-15 digits required."""
+    cleaned = re.sub(r"[\s\-().]", "", value.strip())
+    if not re.fullmatch(r"\+?\d+", cleaned) or not 8 <= len(cleaned.lstrip("+")) <= 15:
+        raise ValueError("must be a phone number with 8 to 15 digits")
+    return cleaned
+
+
+def _optional_phone(value: str | None) -> str | None:
+    if value is None or not value.strip():
+        return None
+    return normalise_phone(value)
+
+
 class LoginRequest(BaseModel):
     email: str = Field(max_length=254)
     password: str = Field(min_length=1, max_length=128)
@@ -45,11 +59,17 @@ class RegisterRequest(BaseModel):
 
 class UserCreate(RegisterRequest):
     role: Role
+    phone: str | None = Field(None, max_length=30, description="E.164-like, 8-15 digits; stored normalised")
+
+    _phone = field_validator("phone")(_optional_phone)
 
 
 class UserUpdate(BaseModel):
     is_active: bool | None = None
     name: str | None = Field(None, min_length=2, max_length=80)
+    phone: str | None = Field(None, max_length=30, description="Send null or '' to clear")
+
+    _phone = field_validator("phone")(_optional_phone)
 
 
 class AuthUser(BaseModel):
@@ -68,6 +88,7 @@ class TokenResponse(BaseModel):
 
 class UserOut(AuthUser):
     is_active: bool
+    phone: str | None = None
     created_at: datetime
 
 

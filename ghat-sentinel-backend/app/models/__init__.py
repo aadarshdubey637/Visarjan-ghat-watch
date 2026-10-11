@@ -4,6 +4,7 @@ from app.models.tables import (  # noqa: F401
     Criterion,
     DataSource,
     Ghat,
+    Message,
     Reading,
     ReviewCase,
     StatewideReading,

@@ -158,4 +158,18 @@ export interface AuthUser { id: string; email: string; name: string; role: Role 
 export interface LoginResponse { access_token: string; token_type: "bearer"; expires_in: number; user: AuthUser }
 export interface DemoAccount { role: Role; email: string; password: string }
 export interface AuthConfig { auth_enabled: boolean; roles: Role[]; demo_accounts: DemoAccount[] }
-export interface UserRecord { id: string; email: string; name: string; role: Role; is_active: boolean; created_at: string }
+export interface UserRecord { id: string; email: string; name: string; role: Role; is_active: boolean; created_at: string; phone?: string | null }
+
+export type MessageChannel = "email" | "whatsapp";
+export interface MessagingConfig {
+  email: { configured: boolean; from_address: string | null };
+  whatsapp: { configured: boolean; mode: "template" | "text"; template_name: string | null; language: string };
+  dry_run: boolean; max_recipients: number;
+}
+export interface Contact { id: string; name: string; role: Role; email: string; phone: string | null }
+export interface SendResultItem { recipient: string; status: "sent" | "failed" | "dry_run"; error: string | null; message_id: string | null }
+export interface SendResponse { results: SendResultItem[]; sent: number; failed: number; dry_run: boolean }
+export interface MessageLogItem {
+  id: string; channel: MessageChannel; recipient: string; subject: string | null; status: "sent" | "failed" | "dry_run";
+  error: string | null; provider_message_id: string | null; sent_by: string; brief_id: string | null; created_at: string;
+}

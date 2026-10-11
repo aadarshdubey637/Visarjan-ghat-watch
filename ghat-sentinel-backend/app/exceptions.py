@@ -42,6 +42,11 @@ class AIUnavailableError(AppError):
     code = "AI_UNAVAILABLE"
 
 
+class ChannelNotConfigured(AppError):
+    status_code = 503
+    code = "CHANNEL_NOT_CONFIGURED"
+
+
 class RateLimitError(AppError):
     status_code = 429
     code = "RATE_LIMITED"

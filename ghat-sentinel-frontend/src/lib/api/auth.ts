@@ -8,5 +8,5 @@ export const getMe = (signal?: AbortSignal) => request<AuthUser>("/auth/me", { s
 
 export const listUsers = (p: { role?: Role; limit?: number; offset?: number } = {}, signal?: AbortSignal) =>
   request<Paged<UserRecord>>("/users", { query: { limit: 100, ...p }, signal });
-export const createUser = (b: { name: string; email: string; password: string; role: Role }) => request<UserRecord>("/users", { method: "POST", body: b });
-export const patchUser = (id: string, b: { is_active?: boolean; name?: string }) => request<UserRecord>(`/users/${encodeURIComponent(id)}`, { method: "PATCH", body: b });
+export const createUser = (b: { name: string; email: string; password: string; role: Role; phone?: string | null }) => request<UserRecord>("/users", { method: "POST", body: b });
+export const patchUser = (id: string, b: { is_active?: boolean; name?: string; phone?: string | null }) => request<UserRecord>(`/users/${encodeURIComponent(id)}`, { method: "PATCH", body: b });

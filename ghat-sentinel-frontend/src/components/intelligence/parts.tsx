@@ -2,6 +2,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { Fragment, useState, type ReactNode } from "react";
 import { Copy, Download, RefreshCw, Send } from "lucide-react";
+import { SendDialog } from "@/components/messaging/send-dialog";
 import { toast } from "sonner";
 import { Button, Card, CardHeader, Field, Select, Textarea } from "@/components/ui";
 import { ErrorState, Spinner } from "@/components/shared/states";
@@ -45,7 +46,7 @@ export function BriefGenerator({ initialGhats = [] }: { initialGhats?: string[] 
   const [start, setStart] = useState(""); const [end, setEnd] = useState(""); const [requireAi, setRequireAi] = useState(false);
   const m = useMutation({ mutationFn: () => generateBrief({ ghat_ids: ghats.length ? ghats : null, start_date: yearStart(start ? Number(start) : null) ?? null, end_date: yearEnd(end ? Number(end) : null) ?? null, language: lang, use_ai: true, require_ai: requireAi }) });
   const years = meta.data?.year_range ? Array.from({ length: meta.data.year_range[1] - meta.data.year_range[0] + 1 }, (_, i) => meta.data!.year_range![0] + i) : [];
-  const d = m.data;
+  const d = m.data; const [sendOpen, setSendOpen] = useState(false);
   return (
     <div className="grid gap-5 lg:grid-cols-3">
       <Card className="lg:col-span-1"><CardHeader title="Municipal review brief" /><div className="space-y-3 p-4">
@@ -63,10 +64,12 @@ export function BriefGenerator({ initialGhats = [] }: { initialGhats?: string[] 
         {d && (<>
           <Card><CardHeader title={d.title} subtitle={`Generated ${new Date(d.generated_at).toLocaleString("en-IN")}`} action={<div className="flex gap-2">
             <Button size="sm" onClick={async () => (await copyText(d.content)) ? toast.success("Brief copied") : toast.error("Copy failed")}><Copy className="h-3 w-3" aria-hidden />Copy</Button>
-            <Button size="sm" onClick={() => downloadText(d.content, `ghat-sentinel-brief-${d.language}.txt`)}><Download className="h-3 w-3" aria-hidden />Download .txt</Button></div>} />
+            <Button size="sm" onClick={() => downloadText(d.content, `ghat-sentinel-brief-${d.language}.txt`)}><Download className="h-3 w-3" aria-hidden />Download .txt</Button>
+            <Button size="sm" variant="primary" onClick={() => setSendOpen(true)}><Send className="h-3 w-3" aria-hidden />Send…</Button></div>} />
             <div className="space-y-3 p-4"><GenerationBadge mode={d.generation_mode} aiStatus={d.ai_status} /><pre className="whitespace-pre-wrap break-words font-sans text-sm leading-relaxed">{d.content}</pre></div></Card>
           <Card><CardHeader title="Evidence" subtitle={`${d.evidence.length} items`} /><div className="max-h-96 overflow-y-auto p-4"><EvidenceList items={d.evidence} /></div></Card>
           <LimitationList items={d.limitations} />
+          <SendDialog open={sendOpen} onClose={() => setSendOpen(false)} channel="email" subject={d.title} body={d.content} briefId={d.brief_id} />
         </>)}
         <p className="text-xs text-ink-muted">{AI_NOTE}</p>
       </div>
@@ -84,7 +87,7 @@ export function renderWhatsApp(text: string): ReactNode[] {
 export function WhatsAppBrief({ initialGhats = [] }: { initialGhats?: string[] }) {
   const [ghats, setGhats] = useState<string[]>(initialGhats); const [lang, setLang] = useState<WhatsAppLang>("en"); const [actions, setActions] = useState(true); const [requireAi, setRequireAi] = useState(false);
   const m = useMutation({ mutationFn: () => generateWhatsApp({ ghat_ids: ghats.length ? ghats : null, language: lang, include_actions: actions, use_ai: true, require_ai: requireAi }) });
-  const d = m.data;
+  const d = m.data; const [sendOpen, setSendOpen] = useState(false);
   return (
     <div className="grid gap-5 lg:grid-cols-3">
       <Card><CardHeader title="WhatsApp brief" /><div className="space-y-3 p-4">
@@ -96,13 +99,15 @@ export function WhatsAppBrief({ initialGhats = [] }: { initialGhats?: string[] }
       <div className="space-y-4 lg:col-span-2">
         {m.isPending && <Spinner label="Generating…" />}{m.isError && <AiError error={m.error} onRetry={() => m.mutate()} />}
         {d && (<>
-          <Card><CardHeader title="Preview" subtitle="Prepared for manual sharing — nothing has been sent." action={<div className="flex gap-2">
+          <Card><CardHeader title="Preview" subtitle="Nothing is sent until you choose Send… and confirm." action={<div className="flex gap-2">
             <Button size="sm" onClick={async () => (await copyText(d.content)) ? toast.success("Copied to clipboard") : toast.error("Copy failed")}><Copy className="h-3 w-3" aria-hidden />Copy</Button>
-            <Button size="sm" loading={m.isPending} onClick={() => m.mutate()}><RefreshCw className="h-3 w-3" aria-hidden />Regenerate</Button></div>} />
+            <Button size="sm" loading={m.isPending} onClick={() => m.mutate()}><RefreshCw className="h-3 w-3" aria-hidden />Regenerate</Button>
+            <Button size="sm" variant="primary" onClick={() => setSendOpen(true)}><Send className="h-3 w-3" aria-hidden />Send…</Button></div>} />
             <div className="space-y-3 p-4"><GenerationBadge mode={d.generation_mode} aiStatus={d.ai_status} />
               <div className="mx-auto max-w-sm rounded-2xl bg-[#DCF8C6] p-3 text-sm shadow-inner"><div className="whitespace-pre-wrap break-words">{renderWhatsApp(d.content)}</div></div>
               <p className="num text-center text-xs text-ink-muted">{d.content.length} characters</p></div></Card>
-          <Card><CardHeader title="Evidence" /><div className="max-h-72 overflow-y-auto p-4"><EvidenceList items={d.evidence} /></div></Card><LimitationList items={d.limitations} /></>)}
+          <Card><CardHeader title="Evidence" /><div className="max-h-72 overflow-y-auto p-4"><EvidenceList items={d.evidence} /></div></Card><LimitationList items={d.limitations} />
+          <SendDialog open={sendOpen} onClose={() => setSendOpen(false)} channel="whatsapp" subject="Ghat Sentinel review summary" body={d.content} briefId={d.brief_id} /></>)}
         <p className="text-xs text-ink-muted">{AI_NOTE}</p>
       </div>
     </div>
