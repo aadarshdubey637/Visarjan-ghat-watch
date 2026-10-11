@@ -38,7 +38,7 @@ function LoginForm() {
     catch (err) { setError(err instanceof ApiError && err.kind === "rate_limited" ? "Too many failed attempts. Wait a minute and try again." : friendlyMessage(err)); }
     finally { setBusy(false); }
   };
-  const demo = config?.demo_accounts.find((d) => d.role === tab);
+  const demo = config?.demo_accounts.find((d) => d.role === tab) ?? config?.demo_accounts.find((d) => d.role === "demo");
   const active = TABS.find((t) => t.role === tab)!;
 
   return (
@@ -76,7 +76,7 @@ function LoginForm() {
         {demo && (
           <div className="mt-5 rounded-lg border border-dashed border-marigold/50 bg-marigold-soft p-3 text-xs text-marigold-dark">
             <p className="font-medium">Demo environment</p>
-            <p className="mt-0.5">A {ROLE_LABEL[demo.role].toLowerCase()} demo account is available.</p>
+            <p className="mt-0.5">{demo.role === "demo" ? "Judges and visitors: this demo login opens every view (officer, field worker and community)." : `A ${ROLE_LABEL[demo.role].toLowerCase()} demo account is available.`}</p>
             <p className="mt-1 font-mono">Email: {demo.email}<br />Password: {demo.password}</p>
             <button type="button" className="mt-1.5 font-semibold underline" onClick={() => { setEmail(demo.email); setPassword(demo.password); setError(null); }}>Fill in the demo login</button>
           </div>
