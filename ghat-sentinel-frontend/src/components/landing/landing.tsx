@@ -109,6 +109,7 @@ export function Landing() {
                 <Button onClick={launchDemo} loading={busy} className="!min-h-12 !border-transparent !bg-marigold px-6 !text-brand-dark shadow-[0_10px_30px_rgba(233,162,59,.45)] hover:!bg-[#f0b153]"><Play className="h-4 w-4" aria-hidden />Launch live demo</Button>
               )}
               <Link href="/login"><Button className={`!min-h-12 px-6 ${presenter && !user ? "glass !text-white" : "!border-transparent !bg-marigold !text-brand-dark hover:!bg-[#f0b153]"}`}>Sign in <ArrowRight className="h-4 w-4" aria-hidden /></Button></Link>
+              <Link href="/register"><Button className="glass !min-h-12 px-6 !text-white">Sign up</Button></Link>
               <Link href="/citizen"><Button className="glass !min-h-12 px-6 !text-white">Citizen guide</Button></Link>
             </div>
             <p className="mt-6 text-xs text-white/65">Historical MPPCB records 2023–2025 · not live monitoring</p>

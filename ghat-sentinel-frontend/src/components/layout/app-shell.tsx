@@ -89,7 +89,10 @@ function PublicShell({ children, user, onLogout, overlay }: { children: ReactNod
                 <Button size="sm" onClick={onLogout}><LogOut className="h-3.5 w-3.5" aria-hidden />Sign out</Button>
               </div>
             ) : (
-              <Link href="/login"><Button size="sm" variant="primary"><LogIn className="h-3.5 w-3.5" aria-hidden />Sign in</Button></Link>
+              <div className="flex items-center gap-2">
+                <Link href="/register"><Button size="sm">Sign up</Button></Link>
+                <Link href="/login"><Button size="sm" variant="primary"><LogIn className="h-3.5 w-3.5" aria-hidden />Sign in</Button></Link>
+              </div>
             )}
           </nav>
         </div>

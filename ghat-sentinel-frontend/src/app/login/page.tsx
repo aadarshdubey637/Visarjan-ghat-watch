@@ -45,6 +45,10 @@ function LoginForm() {
     <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-5">
       <AuthSide className="lg:col-span-2" title="Evidence you can act on." body="Ghat Sentinel turns years of buried water tests into a clear, honest picture of where to look first before Durga visarjan." />
       <div className="rounded-2xl border border-line bg-white p-6 shadow-sm md:p-8 lg:col-span-3">
+        <div className="mb-4 grid grid-cols-2 gap-1 rounded-lg bg-brand-soft p-1 text-center text-sm font-medium">
+          <span className="rounded-md bg-white py-1.5 text-brand-dark shadow-sm">Sign in</span>
+          <Link href="/register" className="rounded-md py-1.5 text-ink-muted hover:text-brand-dark">Sign up</Link>
+        </div>
         <p className="eyebrow">Welcome back</p>
         <h1 className="font-display mt-1 text-3xl font-semibold text-ink">Sign in</h1>
         <div role="tablist" aria-label="Account type" className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
