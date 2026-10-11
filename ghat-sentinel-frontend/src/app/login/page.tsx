@@ -21,7 +21,7 @@ const TABS: { role: Exclude<Role, "developer">; label: string; icon: typeof User
 function LoginForm() {
   const { user, ready, login, config } = useAuth();
   const router = useRouter(); const sp = useSearchParams(); const next = sp.get("next");
-  const [tab, setTab] = useState<(typeof TABS)[number]["role"]>("officer");
+  const [tab, setTab] = useState<(typeof TABS)[number]["role"]>((TABS.find((t) => t.role === sp.get("role"))?.role) ?? "officer");
   const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false); const [error, setError] = useState<string | null>(null);
 
