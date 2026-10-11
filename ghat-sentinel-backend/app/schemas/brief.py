@@ -10,7 +10,7 @@ class BriefRequest(BaseModel):
     start_date: date | None = Field(None, description="Only the year is used (source has no exact dates)")
     end_date: date | None = None
     language: Language = "en"
-    use_ai: bool = Field(True, description="Use Cerebras wording when configured; falls back to template")
+    use_ai: bool = Field(True, description="Use Claude wording when configured; falls back to template")
     require_ai: bool = Field(False, description="Return 503 instead of falling back when AI is unavailable")
 
 

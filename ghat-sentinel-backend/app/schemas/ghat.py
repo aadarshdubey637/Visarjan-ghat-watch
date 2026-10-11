@@ -49,7 +49,8 @@ class DataQuality(BaseModel):
 
 class GhatDetail(GhatSummary):
     parameters: list[ParameterInfo]
-    latest_readings: list[Reading]
+    cpcb_class: str = Field(description="Class used for the `evaluation` on latest_readings")
+    latest_readings: list[Reading] = Field(description="Most recent season per parameter, all phases, with evaluation")
     data_quality: DataQuality
     limitations: list[str]
 

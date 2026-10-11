@@ -3,7 +3,7 @@
 Order of operations (analytics first, AI second):
   1. retrieve readings and run the deterministic criteria + priority engines  -> EvidencePack
   2. render a deterministic template brief from the pack (always available)
-  3. optionally ask Cerebras to re-word it from the SAME evidence; validate; else keep the template
+  3. optionally ask Claude to re-word it from the SAME evidence; validate; else keep the template
 """
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from app.schemas.brief import BriefRequest, BriefResponse, WhatsAppRequest, What
 from app.schemas.common import EvidenceItem
 from app.schemas.ghat import RankedGhat
 from app.schemas.reading import ComparisonResult
-from app.services import cerebras
+from app.services import ai
 from app.services import criteria as crit
 from app.services.analytics import resolve_ghats
 from app.services.common import GENERAL_LIMITATIONS, PHASE_LABEL_EN, PHASE_LABEL_HI, iso_now, utcnow
@@ -261,7 +261,7 @@ def generate_municipal_brief(db: Session, req: BriefRequest) -> BriefResponse:
     generated_at = iso_now()
     title, content = render_municipal(pack, req.language, generated_at)
     mode, status = "template", None
-    result, status = cerebras.try_ai(
+    result, status = ai.try_ai(
         req.use_ai, req.require_ai,
         "Write a concise municipal review brief for a Bhopal municipal officer: one short section per ghat with its "
         "review priority and the reason, the key readings with units and sampling periods, the applicable limits, "
@@ -286,7 +286,7 @@ def generate_whatsapp_brief(db: Session, req: WhatsAppRequest) -> WhatsAppRespon
     generated_at = iso_now()
     content = render_whatsapp(pack, req.language, req.include_actions)
     mode = "template"
-    result, status = cerebras.try_ai(
+    result, status = ai.try_ai(
         req.use_ai, req.require_ai,
         "Write a compact WhatsApp message (plain text, mobile-readable, under 1500 characters per language) for a "
         "municipal officer to forward. For each ghat give: name, priority and its reason, actual values WITH units and "

@@ -9,7 +9,8 @@ from sqlalchemy.orm import Session
 
 from app.exceptions import NotFoundError
 from app.models import DataSource, Ghat, Reading, ReviewCase, StatewideReading
-from app.schemas.analytics import Overview, ParameterTrend, PeriodSummary, TrendPoint, TrendsResponse, TrendSummary
+from app.schemas.analytics import (Finding, FindingsPage, Overview, ParameterTrend, PeriodSummary, TrendPoint,
+                                   TrendsResponse, TrendSummary)
 from app.schemas.common import CaseStatus
 from app.schemas.ghat import DataQuality, GhatDetail, GhatList, GhatSummary, ParameterInfo
 from app.schemas.reading import Reading as ReadingOut
@@ -87,7 +88,7 @@ def all_seasons(db: Session) -> list[tuple[int, str]]:
     return sorted({(y, f) for y, f in rows}, key=lambda s: season_key(*s))
 
 
-def ghat_detail(db: Session, ghat_id: str) -> GhatDetail:
+def ghat_detail(db: Session, ghat_id: str, cpcb_class: str | None = None) -> GhatDetail:
     g = get_ghat(db, ghat_id)
     rows = db.scalars(select(Reading).where(Reading.ghat_id == ghat_id)).all()
     summary = _summary(g, _stats_by_ghat(db))
@@ -122,8 +123,39 @@ def ghat_detail(db: Session, ghat_id: str) -> GhatDetail:
         missing_count=sum(1 for r in rows if not is_reported(r)), censored_count=sum(1 for r in rows if is_censored(r)),
         seasons_covered=[f"{y} {f}" for y, f in mine], seasons_missing=[f"{y} {f}" for y, f in missing],
         site_match_confidence=g.site_match_confidence, warnings=warnings)
-    return GhatDetail(**summary.model_dump(), parameters=infos, latest_readings=[reading_out(r) for r in latest],
+    cls = crit.check_class(cpcb_class)
+    idx = crit.criteria_index(db, cls)
+    latest_out = [reading_out(r, crit.evaluate(r, idx.get(r.parameter), cls)) for r in latest]
+    return GhatDetail(**summary.model_dump(), parameters=infos, latest_readings=latest_out, cpcb_class=cls,
                       data_quality=dq, limitations=GENERAL_LIMITATIONS)
+
+
+def findings(db: Session, ghat_id: str | None, parameter: str | None, cpcb_class: str | None, limit: int,
+             offset: int) -> FindingsPage:
+    """Readings outside the applicable criterion, most severe first (deterministic, from the criteria engine)."""
+    cls = crit.check_class(cpcb_class)
+    if ghat_id:
+        get_ghat(db, ghat_id)
+    q = select(Reading)
+    if ghat_id:
+        q = q.where(Reading.ghat_id == ghat_id)
+    if parameter:
+        q = q.where(func.lower(Reading.parameter) == parameter.strip().lower())
+    idx = crit.criteria_index(db, cls)
+    names = {g.id: g.name for g in db.scalars(select(Ghat))}
+    hits = []
+    for r in db.scalars(q):
+        res = crit.evaluate(r, idx.get(r.parameter), cls)
+        if res.result == "outside_criterion":
+            hits.append((r, res))
+    hits.sort(key=lambda h: (-(h[1].relative_exceedance or 0), -h[0].sample_year, h[0].id))
+    page = hits[offset:offset + limit]
+    return FindingsPage(
+        items=[Finding(ghat_id=r.ghat_id, ghat_name=names.get(r.ghat_id, r.ghat_id), reading=reading_out(r, res))
+               for r, res in page],
+        total=len(hits), limit=limit, offset=offset, cpcb_class=cls, intended_use=crit.intended_use(db, cls),
+        note="Outside-criterion readings against the selected CPCB class, sorted by distance past the limit. "
+             "Historical samples only; not a statement about current conditions.")
 
 
 def query_readings(db: Session, ghat_id: str, parameter: str | None, lo: int | None, hi: int | None,

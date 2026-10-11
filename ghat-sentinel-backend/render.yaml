@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: starter            # persistent disks require a paid plan
     buildCommand: pip install -r requirements.txt
-    startCommand: python scripts/download_data.py && python scripts/seed_database.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    startCommand: (python scripts/download_data.py || echo "download failed; continuing"); (python scripts/seed_database.py || echo "seed failed; continuing"); uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/v1/health
     disk:
       name: ghat-data
@@ -21,7 +21,7 @@ services:
         value: /var/data
       - key: FRONTEND_ORIGIN
         value: https://your-frontend.example.com   # change me
-      - key: CEREBRAS_API_KEY
+      - key: ANTHROPIC_API_KEY
         sync: false
-      - key: CEREBRAS_MODEL
+      - key: ANTHROPIC_MODEL
         sync: false

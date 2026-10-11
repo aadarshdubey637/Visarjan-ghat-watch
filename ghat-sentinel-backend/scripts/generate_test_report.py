@@ -11,13 +11,13 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def main() -> int:
-    proc = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider"], cwd=ROOT,
+    proc = subprocess.run([sys.executable, "-m", "pytest", "-p", "no:cacheprovider", "-W", "ignore"], cwd=ROOT,
                           capture_output=True, text=True)
     out = proc.stdout + proc.stderr
     summary = next((ln for ln in reversed(out.splitlines()) if " passed" in ln or " failed" in ln or "error" in ln),
                    "no summary line found")
-    report = (f"# Test report\n\nGenerated: {datetime.now(timezone.utc).isoformat(timespec='seconds')}Z\n\n"
-              f"Command: `pytest -q`\n\nExit code: {proc.returncode}\n\nSummary: **{summary.strip()}**\n\n"
+    report = (f"# Test report\n\nGenerated: {datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}\n\n"
+              f"Command: `pytest`\n\nExit code: {proc.returncode}\n\nSummary: **{summary.strip()}**\n\n"
               f"```\n{out[-4000:]}\n```\n")
     (ROOT / "docs" / "TEST_REPORT.md").write_text(report, encoding="utf-8")
     print(summary)

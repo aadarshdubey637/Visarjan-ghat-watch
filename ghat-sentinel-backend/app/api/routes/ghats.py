@@ -32,8 +32,8 @@ def ranked(as_of: date | None = None, start_date: date | None = None, end_date: 
 
 
 @router.get("/{ghat_id}", response_model=GhatDetail, summary="Ghat details", responses=E404)
-def ghat_detail(ghat_id: str, db: Session = Depends(get_db)):
-    return analytics.ghat_detail(db, ghat_id)
+def ghat_detail(ghat_id: str, cpcb_class: str | None = Query(None, max_length=1), db: Session = Depends(get_db)):
+    return analytics.ghat_detail(db, ghat_id, cpcb_class)
 
 
 @router.get("/{ghat_id}/readings", response_model=ReadingsPage, summary="Observed readings with provenance",

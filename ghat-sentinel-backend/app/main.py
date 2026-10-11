@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app import database
-from app.api.routes import analytics, brief, cases, citizen, ghats, health, predict, reports
+from app.api.routes import analytics, brief, cases, citizen, criteria, ghats, health, predict, reports
 from app.config import settings
 from app.exceptions import install_exception_handlers
 from app.services import ingestion
@@ -53,7 +53,7 @@ async def limit_request_size(request: Request, call_next):
     return await call_next(request)
 
 
-for module in (health, ghats, analytics, predict, brief, citizen, cases, reports):
+for module in (health, ghats, analytics, criteria, predict, brief, citizen, cases, reports):
     app.include_router(module.router, prefix=settings.API_PREFIX)
 
 

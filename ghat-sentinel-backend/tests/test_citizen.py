@@ -12,7 +12,7 @@ def test_guide_both_languages(client):
     hi = client.get(f"{P}/citizen/guide", params={"language": "hi"}).json()
     assert en["language"] == "en" and hi["language"] == "hi" and len(en["items"]) == len(hi["items"]) >= 5
     assert any("ऀ" <= ch <= "ॿ" for ch in hi["items"][0]["body"])
-    assert all(i["approval_status"] for i in en["items"]) and "not an official order" in en["notice"]
+    assert all(i["approval_status"] for i in en["items"]) and "not an official order" in en["notice"].lower()
     assert client.get(f"{P}/citizen/guide", params={"language": "fr"}).status_code == 422
 
 

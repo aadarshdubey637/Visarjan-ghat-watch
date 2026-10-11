@@ -60,6 +60,45 @@ def test_evaluate_flag_attaches_comparison(client):
     assert all(i["evaluation"]["result"] == "within_criterion" for i in r["items"])
 
 
+def test_ghat_detail_latest_readings_carry_evaluation(client):
+    g = client.get(f"{P}/ghats/{GHAT_A}").json()
+    assert g["cpcb_class"] == "B" and g["latest_readings"]
+    assert all(r["evaluation"] is not None for r in g["latest_readings"])
+    bod = [r for r in g["latest_readings"] if r["parameter"] == "BOD" and r["phase"] == "during"][0]
+    assert bod["sample_year"] == 2024 and bod["evaluation"]["result"] == "insufficient_data"  # not sampled
+    assert client.get(f"{P}/ghats/{GHAT_A}", params={"cpcb_class": "Z"}).status_code == 422
+
+
+def test_findings_are_outside_criterion_only_and_sorted(client):
+    f = client.get(f"{P}/analytics/findings", params={"limit": 100}).json()
+    assert f["total"] == 10 and f["cpcb_class"] == "B" and len(f["items"]) == 10
+    assert all(i["reading"]["evaluation"]["result"] == "outside_criterion" for i in f["items"])
+    rel = [i["reading"]["evaluation"]["relative_exceedance"] for i in f["items"]]
+    assert rel == sorted(rel, reverse=True) and f["items"][0]["reading"]["value"] == 0.0
+    assert f["items"][0]["ghat_name"] == "Test Ghat A"
+
+
+def test_findings_filters_and_pagination(client):
+    a = client.get(f"{P}/analytics/findings", params={"ghat_id": GHAT_B}).json()
+    assert a["total"] == 2 and {i["ghat_id"] for i in a["items"]} == {GHAT_B}
+    bod = client.get(f"{P}/analytics/findings", params={"parameter": "bod"}).json()
+    assert bod["total"] == 3 and all(i["reading"]["parameter"] == "BOD" for i in bod["items"])
+    p1 = client.get(f"{P}/analytics/findings", params={"limit": 4}).json()
+    p2 = client.get(f"{P}/analytics/findings", params={"limit": 4, "offset": 4}).json()
+    assert len(p1["items"]) == 4 and not {i["reading"]["id"] for i in p1["items"]} & {i["reading"]["id"] for i in p2["items"]}
+    assert client.get(f"{P}/analytics/findings", params={"ghat_id": "nope"}).status_code == 404
+    assert client.get(f"{P}/analytics/findings", params={"limit": 500}).status_code == 422
+
+
+def test_criteria_endpoint(client):
+    j = client.get(f"{P}/criteria").json()
+    assert len(j["items"]) == 19 and set(j["classes"]) == {"A", "B", "C", "D", "E"} and j["default_cpcb_class"] == "B"
+    b = client.get(f"{P}/criteria", params={"cpcb_class": "B"}).json()["items"]
+    assert {c["parameter"] for c in b} == {"Total coliform", "pH", "Dissolved oxygen", "BOD (5 days 20C)"}
+    assert all(c["source_reference"] and c["comparison_operator"] for c in b)
+    assert client.get(f"{P}/criteria", params={"cpcb_class": "Q"}).status_code == 422
+
+
 def test_data_quality_lists_missing_seasons(client):
     q = client.get(f"{P}/ghats/{GHAT_B}").json()["data_quality"]
     assert "2019 Durga" in q["seasons_missing"] and q["completeness"] < 1

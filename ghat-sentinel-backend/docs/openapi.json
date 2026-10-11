@@ -1,0 +1,5499 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Ghat Sentinel API",
+    "description": "Environmental intelligence for Bhopal Visarjan Ghat Watch. Observations, deterministic calculations, AI explanations, experimental forecasts and human-reviewed cases are kept distinct. Historical MPPCB samples (2023-2025) only: this API does not provide live monitoring. No authentication: public demo deployment.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Service health",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metadata": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Data coverage, parameters and sources",
+        "operationId": "metadata_api_v1_metadata_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ghats": {
+      "get": {
+        "tags": [
+          "ghats"
+        ],
+        "summary": "List ghats found in the imported data",
+        "operationId": "list_ghats_api_v1_ghats_get",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GhatList"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/ghats/ranked": {
+      "get": {
+        "tags": [
+          "ghats"
+        ],
+        "summary": "Ghats ranked by review priority",
+        "description": "Deterministic project-defined heuristic; not an official classification. Date filters apply at year granularity. cpcb_class selects the intended use (default B, outdoor bathing).",
+        "operationId": "ranked_api_v1_ghats_ranked_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "As Of"
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Date"
+            }
+          },
+          {
+            "name": "cpcb_class",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cpcb Class"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RankedResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/ghats/{ghat_id}": {
+      "get": {
+        "tags": [
+          "ghats"
+        ],
+        "summary": "Ghat details",
+        "operationId": "ghat_detail_api_v1_ghats__ghat_id__get",
+        "parameters": [
+          {
+            "name": "ghat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ghat Id"
+            }
+          },
+          {
+            "name": "cpcb_class",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cpcb Class"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GhatDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/ghats/{ghat_id}/readings": {
+      "get": {
+        "tags": [
+          "ghats"
+        ],
+        "summary": "Observed readings with provenance",
+        "operationId": "readings_api_v1_ghats__ghat_id__readings_get",
+        "parameters": [
+          {
+            "name": "ghat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ghat Id"
+            }
+          },
+          {
+            "name": "parameter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Parameter"
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Date"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "evaluate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Attach the deterministic criterion comparison",
+              "default": false,
+              "title": "Evaluate"
+            },
+            "description": "Attach the deterministic criterion comparison"
+          },
+          {
+            "name": "cpcb_class",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cpcb Class"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadingsPage"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/ghats/{ghat_id}/trends": {
+      "get": {
+        "tags": [
+          "ghats"
+        ],
+        "summary": "Historical series and descriptive trends",
+        "operationId": "trends_api_v1_ghats__ghat_id__trends_get",
+        "parameters": [
+          {
+            "name": "ghat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ghat Id"
+            }
+          },
+          {
+            "name": "parameter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Parameter"
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/overview": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Dashboard metrics",
+        "operationId": "overview_api_v1_analytics_overview_get",
+        "parameters": [
+          {
+            "name": "cpcb_class",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cpcb Class"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Overview"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/findings": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Outside-criterion readings, most severe first",
+        "operationId": "findings_api_v1_analytics_findings_get",
+        "parameters": [
+          {
+            "name": "ghat_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ghat Id"
+            }
+          },
+          {
+            "name": "parameter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Parameter"
+            }
+          },
+          {
+            "name": "cpcb_class",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cpcb Class"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindingsPage"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/benchmark": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Bhopal vs statewide (only when comparable)",
+        "operationId": "benchmark_api_v1_analytics_benchmark_get",
+        "parameters": [
+          {
+            "name": "parameter",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80,
+              "title": "Parameter"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 2100,
+                  "minimum": 1990
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Year"
+            }
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "MPPCB regional office, e.g. 'R.O. Bhopal'",
+              "title": "Region"
+            },
+            "description": "MPPCB regional office, e.g. 'R.O. Bhopal'"
+          },
+          {
+            "name": "phase",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "pre",
+                    "during",
+                    "after"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Phase"
+            }
+          },
+          {
+            "name": "cpcb_class",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cpcb Class"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Benchmark"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/criteria": {
+      "get": {
+        "tags": [
+          "criteria"
+        ],
+        "summary": "CPCB criteria used by the comparison engine",
+        "operationId": "list_criteria_api_v1_criteria_get",
+        "parameters": [
+          {
+            "name": "cpcb_class",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter to one class (A-E)",
+              "title": "Cpcb Class"
+            },
+            "description": "Filter to one class (A-E)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriteriaList"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/predict/oct20": {
+      "get": {
+        "tags": [
+          "outlook"
+        ],
+        "summary": "Experimental 20 October seasonal outlook",
+        "description": "Returns an experimental estimate only when enough comparable history exists; otherwise a historical comparison or insufficient_data. Never an observed reading. parameter defaults to 'Dissolved oxygen'; omitting ghat_id pools ghats into a historical comparison only.",
+        "operationId": "oct20_api_v1_predict_oct20_get",
+        "parameters": [
+          {
+            "name": "ghat_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ghat Id"
+            }
+          },
+          {
+            "name": "parameter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Parameter"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 2100,
+                  "minimum": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Year"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Oct20Outlook"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/brief/generate": {
+      "post": {
+        "tags": [
+          "briefs"
+        ],
+        "summary": "Evidence-backed municipal brief",
+        "operationId": "generate_api_v1_brief_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BriefRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BriefResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/brief/whatsapp": {
+      "post": {
+        "tags": [
+          "briefs"
+        ],
+        "summary": "Copyable WhatsApp-ready brief",
+        "operationId": "whatsapp_api_v1_brief_whatsapp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatsAppRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatsAppResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizen/ask": {
+      "post": {
+        "tags": [
+          "citizen"
+        ],
+        "summary": "Ask a question about approved guidance",
+        "operationId": "ask_api_v1_citizen_ask_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CitizenQuestion"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizen/ghats": {
+      "get": {
+        "tags": [
+          "citizen"
+        ],
+        "summary": "Historical comparison and sample freshness (not live)",
+        "operationId": "ghats_api_v1_citizen_ghats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CitizenGhats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizen/guide": {
+      "get": {
+        "tags": [
+          "citizen"
+        ],
+        "summary": "Pollution-prevention guidance",
+        "operationId": "guide_api_v1_citizen_guide_get",
+        "parameters": [
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "en",
+                "hi"
+              ],
+              "type": "string",
+              "default": "en",
+              "title": "Language"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Guide"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/citizen/resources": {
+      "get": {
+        "tags": [
+          "citizen"
+        ],
+        "summary": "Official resources and source metadata",
+        "operationId": "resources_api_v1_citizen_resources_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resources"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cases": {
+      "get": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Verification queue",
+        "operationId": "list_cases_api_v1_cases_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "needs_verification",
+                    "under_review",
+                    "action_assigned",
+                    "resolved"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "ghat_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ghat Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseList"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Create a verification case",
+        "operationId": "create_case_api_v1_cases_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaseCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewCase"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/cases/{case_id}": {
+      "get": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Get one case",
+        "operationId": "get_case_api_v1_cases__case_id__get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewCase"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Update status, assignee and notes",
+        "operationId": "update_case_api_v1_cases__case_id__patch",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaseUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewCase"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/v1/reports/generate": {
+      "post": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "Evidence report (JSON, or CSV download)",
+        "description": "format=json returns the structured Report. format=csv returns a text/csv attachment with one row per reading, its criterion comparison and ghat priority.",
+        "operationId": "generate_api_v1_reports_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "JSON report or CSV file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Report"
+                }
+              },
+              "text/csv": {}
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AIResponse": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ],
+            "title": "Language"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceItem"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "generation_mode": {
+            "type": "string",
+            "enum": [
+              "template",
+              "ai"
+            ],
+            "title": "Generation Mode",
+            "default": "template"
+          },
+          "ai_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Status",
+            "description": "Why AI wording was not used, if applicable"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer",
+          "language",
+          "evidence",
+          "limitations",
+          "generated_at"
+        ],
+        "title": "AIResponse"
+      },
+      "Benchmark": {
+        "properties": {
+          "parameter": {
+            "type": "string",
+            "title": "Parameter"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          },
+          "comparable": {
+            "type": "boolean",
+            "title": "Comparable"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "cpcb_class": {
+            "type": "string",
+            "title": "Cpcb Class"
+          },
+          "criterion_applied": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criterion Applied"
+          },
+          "aggregation_method": {
+            "type": "string",
+            "title": "Aggregation Method"
+          },
+          "bhopal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StatBlock"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "statewide": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StatBlock"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "statewide_excluding_bhopal_office": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StatBlock"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "region_stats": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StatBlock"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bhopal_sample_count": {
+            "type": "integer",
+            "title": "Bhopal Sample Count"
+          },
+          "statewide_sample_count": {
+            "type": "integer",
+            "title": "Statewide Sample Count"
+          },
+          "missing_data_exclusions": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Missing Data Exclusions"
+          },
+          "source_coverage": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Source Coverage"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parameter",
+          "year",
+          "region",
+          "comparable",
+          "unit",
+          "cpcb_class",
+          "criterion_applied",
+          "aggregation_method",
+          "bhopal",
+          "statewide",
+          "statewide_excluding_bhopal_office",
+          "region_stats",
+          "bhopal_sample_count",
+          "statewide_sample_count",
+          "missing_data_exclusions",
+          "source_coverage",
+          "warnings",
+          "limitations"
+        ],
+        "title": "Benchmark"
+      },
+      "BriefRequest": {
+        "properties": {
+          "ghat_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ghat Ids",
+            "description": "Null/empty = all ghats"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date",
+            "description": "Only the year is used (source has no exact dates)"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ],
+            "title": "Language",
+            "default": "en"
+          },
+          "use_ai": {
+            "type": "boolean",
+            "title": "Use Ai",
+            "description": "Use Claude wording when configured; falls back to template",
+            "default": true
+          },
+          "require_ai": {
+            "type": "boolean",
+            "title": "Require Ai",
+            "description": "Return 503 instead of falling back when AI is unavailable",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "BriefRequest"
+      },
+      "BriefResponse": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ],
+            "title": "Language"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceItem"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "generation_mode": {
+            "type": "string",
+            "enum": [
+              "template",
+              "ai"
+            ],
+            "title": "Generation Mode"
+          },
+          "ai_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Status"
+          },
+          "brief_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brief Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "content",
+          "language",
+          "generated_at",
+          "evidence",
+          "limitations",
+          "generation_mode"
+        ],
+        "title": "BriefResponse"
+      },
+      "CaseCreate": {
+        "properties": {
+          "ghat_id": {
+            "type": "string",
+            "title": "Ghat Id"
+          },
+          "reading_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Reading Ids"
+          },
+          "recommended_action": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Recommended Action"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Notes",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "ghat_id",
+          "recommended_action"
+        ],
+        "title": "CaseCreate"
+      },
+      "CaseList": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewCase"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "items"
+        ],
+        "title": "CaseList"
+      },
+      "CaseUpdate": {
+        "properties": {
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "needs_verification",
+                  "under_review",
+                  "action_assigned",
+                  "resolved"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "assigned_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assigned To"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "resolution_summary": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Summary"
+          }
+        },
+        "type": "object",
+        "title": "CaseUpdate"
+      },
+      "CitizenGhat": {
+        "properties": {
+          "ghat_id": {
+            "type": "string",
+            "title": "Ghat Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "water_body": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Water Body"
+          },
+          "last_sample_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sample Year"
+          },
+          "last_sample_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sample Date"
+          },
+          "latest_season": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Season"
+          },
+          "latest_season_summary": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Latest Season Summary",
+            "description": "Plain statements about the latest recorded values"
+          },
+          "historical_comparison": {
+            "type": "string",
+            "title": "Historical Comparison"
+          },
+          "evaluated_reading_count": {
+            "type": "integer",
+            "title": "Evaluated Reading Count",
+            "default": 0
+          },
+          "historical_exceedance_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Historical Exceedance Rate",
+            "description": "Share of past evaluable readings outside CPCB class B limits (0-1). Not a safety ranking."
+          },
+          "current_conditions": {
+            "type": "string",
+            "title": "Current Conditions",
+            "default": "unknown"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ghat_id",
+          "name",
+          "water_body",
+          "last_sample_year",
+          "last_sample_date",
+          "latest_season",
+          "latest_season_summary",
+          "historical_comparison",
+          "limitations"
+        ],
+        "title": "CitizenGhat"
+      },
+      "CitizenGhats": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CitizenGhat"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "current_conditions_available": {
+            "type": "boolean",
+            "title": "Current Conditions Available",
+            "default": false
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "notice"
+        ],
+        "title": "CitizenGhats"
+      },
+      "CitizenQuestion": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Question"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ],
+            "title": "Language",
+            "default": "en"
+          },
+          "ghat_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ghat Id"
+          },
+          "use_ai": {
+            "type": "boolean",
+            "title": "Use Ai",
+            "default": true
+          },
+          "require_ai": {
+            "type": "boolean",
+            "title": "Require Ai",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "CitizenQuestion"
+      },
+      "ComparisonResult": {
+        "properties": {
+          "reading_id": {
+            "type": "string",
+            "title": "Reading Id"
+          },
+          "criterion_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criterion Id"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "within_criterion",
+              "outside_criterion",
+              "insufficient_data",
+              "not_comparable"
+            ],
+            "title": "Result"
+          },
+          "observed_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed Value"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold"
+          },
+          "comparison_operator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparison Operator"
+          },
+          "sample_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Date",
+            "description": "Always null for the supplied data (no exact dates)"
+          },
+          "source_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Reference"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "parameter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameter"
+          },
+          "cpcb_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cpcb Class"
+          },
+          "threshold_upper": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold Upper"
+          },
+          "sample_period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Period"
+          },
+          "relative_exceedance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relative Exceedance",
+            "description": "Distance outside the limit as a fraction of the limit (only when outside_criterion)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reading_id",
+          "criterion_id",
+          "result",
+          "observed_value",
+          "unit",
+          "threshold",
+          "comparison_operator",
+          "source_reference",
+          "reason"
+        ],
+        "title": "ComparisonResult"
+      },
+      "CriteriaList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Criterion"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "classes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Classes"
+          },
+          "default_cpcb_class": {
+            "type": "string",
+            "title": "Default Cpcb Class"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "classes",
+          "default_cpcb_class",
+          "note"
+        ],
+        "title": "CriteriaList"
+      },
+      "Criterion": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "parameter": {
+            "type": "string",
+            "title": "Parameter"
+          },
+          "intended_use": {
+            "type": "string",
+            "title": "Intended Use"
+          },
+          "comparison_operator": {
+            "type": "string",
+            "title": "Comparison Operator",
+            "description": "<, <=, >, >=, between_inclusive, between_exclusive"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold",
+            "description": "Single limit, or the lower bound for ranges"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "source_reference": {
+            "type": "string",
+            "title": "Source Reference"
+          },
+          "cpcb_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cpcb Class"
+          },
+          "threshold_upper": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold Upper",
+            "description": "Upper bound for range criteria"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "parameter",
+          "intended_use",
+          "comparison_operator",
+          "threshold",
+          "unit",
+          "source_reference"
+        ],
+        "title": "Criterion"
+      },
+      "DataQuality": {
+        "properties": {
+          "completeness": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completeness",
+            "description": "Share of rows with a numeric value or BDL/ND flag (0-1)"
+          },
+          "numeric_count": {
+            "type": "integer",
+            "title": "Numeric Count"
+          },
+          "missing_count": {
+            "type": "integer",
+            "title": "Missing Count"
+          },
+          "censored_count": {
+            "type": "integer",
+            "title": "Censored Count"
+          },
+          "seasons_covered": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Seasons Covered"
+          },
+          "seasons_missing": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Seasons Missing"
+          },
+          "site_match_confidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Site Match Confidence"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "completeness",
+          "numeric_count",
+          "missing_count",
+          "censored_count",
+          "seasons_covered",
+          "seasons_missing",
+          "site_match_confidence",
+          "warnings"
+        ],
+        "title": "DataQuality"
+      },
+      "ErrorDetail": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "examples": [
+              "GHAT_NOT_FOUND"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorDetail"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse"
+      },
+      "EvidenceItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Stable evidence ID (a reading ID, or calc:/guide:/res:/forecast: prefixed ID)"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "observation",
+              "calculation",
+              "guidance",
+              "resource",
+              "forecast"
+            ],
+            "title": "Type"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Human-readable statement of the fact"
+          },
+          "ghat_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ghat Id"
+          },
+          "ghat_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ghat Name"
+          },
+          "parameter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameter"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "sample_period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Period",
+            "description": "e.g. '2025 Ganesh (during)'. The source has no exact dates."
+          },
+          "source_file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source File"
+          },
+          "source_record_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Record Id"
+          },
+          "source_page": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Page"
+          },
+          "source_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "text"
+        ],
+        "title": "EvidenceItem",
+        "description": "One traceable fact supplied to a brief / answer. `id` is what AI output may cite."
+      },
+      "FactorOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "raw_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Value"
+          },
+          "max_points": {
+            "type": "number",
+            "title": "Max Points"
+          },
+          "points": {
+            "type": "number",
+            "title": "Points"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "label",
+          "raw_value",
+          "max_points",
+          "points",
+          "explanation"
+        ],
+        "title": "FactorOut"
+      },
+      "Finding": {
+        "properties": {
+          "ghat_id": {
+            "type": "string",
+            "title": "Ghat Id"
+          },
+          "ghat_name": {
+            "type": "string",
+            "title": "Ghat Name"
+          },
+          "reading": {
+            "$ref": "#/components/schemas/Reading",
+            "description": "The reading, with its criterion comparison in `reading.evaluation`"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ghat_id",
+          "ghat_name",
+          "reading"
+        ],
+        "title": "Finding"
+      },
+      "FindingsPage": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "cpcb_class": {
+            "type": "string",
+            "title": "Cpcb Class"
+          },
+          "intended_use": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intended Use"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "items",
+          "cpcb_class",
+          "intended_use",
+          "note"
+        ],
+        "title": "FindingsPage"
+      },
+      "GhatDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "water_body": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Water Body"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude",
+            "description": "Null: coordinates are not in the source data"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "last_sample_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sample Date",
+            "description": "Null: source has no exact dates; see last_sample_year"
+          },
+          "last_sample_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sample Year"
+          },
+          "first_sample_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Sample Year"
+          },
+          "observation_count": {
+            "type": "integer",
+            "title": "Observation Count",
+            "default": 0
+          },
+          "data_status": {
+            "type": "string",
+            "enum": [
+              "historical",
+              "no_data"
+            ],
+            "title": "Data Status",
+            "default": "historical"
+          },
+          "data_status_note": {
+            "type": "string",
+            "title": "Data Status Note",
+            "default": "Historical MPPCB immersion-season samples; not live monitoring."
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterInfo"
+            },
+            "type": "array",
+            "title": "Parameters"
+          },
+          "cpcb_class": {
+            "type": "string",
+            "title": "Cpcb Class",
+            "description": "Class used for the `evaluation` on latest_readings"
+          },
+          "latest_readings": {
+            "items": {
+              "$ref": "#/components/schemas/Reading"
+            },
+            "type": "array",
+            "title": "Latest Readings",
+            "description": "Most recent season per parameter, all phases, with evaluation"
+          },
+          "data_quality": {
+            "$ref": "#/components/schemas/DataQuality"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "parameters",
+          "cpcb_class",
+          "latest_readings",
+          "data_quality",
+          "limitations"
+        ],
+        "title": "GhatDetail"
+      },
+      "GhatList": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/GhatSummary"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "items"
+        ],
+        "title": "GhatList"
+      },
+      "GhatSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "water_body": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Water Body"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude",
+            "description": "Null: coordinates are not in the source data"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "last_sample_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sample Date",
+            "description": "Null: source has no exact dates; see last_sample_year"
+          },
+          "last_sample_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sample Year"
+          },
+          "first_sample_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Sample Year"
+          },
+          "observation_count": {
+            "type": "integer",
+            "title": "Observation Count",
+            "default": 0
+          },
+          "data_status": {
+            "type": "string",
+            "enum": [
+              "historical",
+              "no_data"
+            ],
+            "title": "Data Status",
+            "default": "historical"
+          },
+          "data_status_note": {
+            "type": "string",
+            "title": "Data Status Note",
+            "default": "Historical MPPCB immersion-season samples; not live monitoring."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "GhatSummary"
+      },
+      "GuidanceItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "approval_status": {
+            "type": "string",
+            "title": "Approval Status"
+          },
+          "basis": {
+            "type": "string",
+            "title": "Basis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "body",
+          "category",
+          "approval_status",
+          "basis"
+        ],
+        "title": "GuidanceItem"
+      },
+      "Guide": {
+        "properties": {
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ],
+            "title": "Language"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/GuidanceItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "language",
+          "items",
+          "notice"
+        ],
+        "title": "Guide"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded"
+            ],
+            "title": "Status"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "database": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "error"
+            ],
+            "title": "Database"
+          },
+          "data_loaded": {
+            "type": "boolean",
+            "title": "Data Loaded"
+          },
+          "ghats_loaded": {
+            "type": "integer",
+            "title": "Ghats Loaded"
+          },
+          "readings_loaded": {
+            "type": "integer",
+            "title": "Readings Loaded"
+          },
+          "ai_configured": {
+            "type": "boolean",
+            "title": "Ai Configured"
+          },
+          "app": {
+            "type": "string",
+            "title": "App"
+          },
+          "env": {
+            "type": "string",
+            "title": "Env"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "timestamp",
+          "database",
+          "data_loaded",
+          "ghats_loaded",
+          "readings_loaded",
+          "ai_configured",
+          "app",
+          "env"
+        ],
+        "title": "Health"
+      },
+      "Metadata": {
+        "properties": {
+          "app": {
+            "type": "string",
+            "title": "App"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "api_prefix": {
+            "type": "string",
+            "title": "Api Prefix"
+          },
+          "docs_url": {
+            "type": "string",
+            "title": "Docs Url"
+          },
+          "openapi_url": {
+            "type": "string",
+            "title": "Openapi Url"
+          },
+          "total_ghats": {
+            "type": "integer",
+            "title": "Total Ghats"
+          },
+          "total_readings": {
+            "type": "integer",
+            "title": "Total Readings"
+          },
+          "year_range": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year Range"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterMeta"
+            },
+            "type": "array",
+            "title": "Parameters"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceMeta"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "cpcb_classes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Cpcb Classes"
+          },
+          "default_cpcb_class": {
+            "type": "string",
+            "title": "Default Cpcb Class"
+          },
+          "enums": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Enums"
+          },
+          "ai_configured": {
+            "type": "boolean",
+            "title": "Ai Configured"
+          },
+          "date_convention": {
+            "type": "string",
+            "title": "Date Convention"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "app",
+          "version",
+          "api_prefix",
+          "docs_url",
+          "openapi_url",
+          "total_ghats",
+          "total_readings",
+          "year_range",
+          "parameters",
+          "sources",
+          "cpcb_classes",
+          "default_cpcb_class",
+          "enums",
+          "ai_configured",
+          "date_convention",
+          "limitations"
+        ],
+        "title": "Metadata"
+      },
+      "Oct20Outlook": {
+        "properties": {
+          "forecast_status": {
+            "type": "string",
+            "enum": [
+              "experimental_estimate",
+              "historical_comparison",
+              "insufficient_data"
+            ],
+            "title": "Forecast Status"
+          },
+          "is_prediction": {
+            "type": "boolean",
+            "title": "Is Prediction",
+            "description": "True only for experimental_estimate; never an observed reading"
+          },
+          "target_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Target Date"
+          },
+          "ghat_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ghat Id"
+          },
+          "parameter": {
+            "type": "string",
+            "title": "Parameter"
+          },
+          "prediction": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prediction"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method"
+          },
+          "historical_sample_count": {
+            "type": "integer",
+            "title": "Historical Sample Count"
+          },
+          "date_range_used": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Range Used",
+            "description": "[first_year, last_year] of seasons used"
+          },
+          "historical_values": {
+            "items": {
+              "$ref": "#/components/schemas/SeasonValue"
+            },
+            "type": "array",
+            "title": "Historical Values"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Uncertainty"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "forecast_status",
+          "is_prediction",
+          "target_date",
+          "ghat_id",
+          "parameter",
+          "prediction",
+          "unit",
+          "method",
+          "historical_sample_count",
+          "historical_values",
+          "uncertainty",
+          "assumptions",
+          "limitations"
+        ],
+        "title": "Oct20Outlook"
+      },
+      "OfficialResource": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "issuing_organization": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuing Organization"
+          },
+          "resource_type": {
+            "type": "string",
+            "title": "Resource Type"
+          },
+          "last_verified": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Verified"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "verification_note": {
+            "type": "string",
+            "title": "Verification Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "url",
+          "issuing_organization",
+          "resource_type",
+          "last_verified",
+          "description",
+          "verification_note"
+        ],
+        "title": "OfficialResource"
+      },
+      "Overview": {
+        "properties": {
+          "total_ghats": {
+            "type": "integer",
+            "title": "Total Ghats"
+          },
+          "total_readings": {
+            "type": "integer",
+            "title": "Total Readings"
+          },
+          "numeric_readings": {
+            "type": "integer",
+            "title": "Numeric Readings"
+          },
+          "missing_readings": {
+            "type": "integer",
+            "title": "Missing Readings"
+          },
+          "censored_readings": {
+            "type": "integer",
+            "title": "Censored Readings"
+          },
+          "latest_sample_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Sample Year"
+          },
+          "latest_sample_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Sample Date",
+            "description": "Null: source has no exact dates"
+          },
+          "flagged_readings": {
+            "type": "integer",
+            "title": "Flagged Readings",
+            "description": "Readings outside the applicable criterion (cpcb_class)"
+          },
+          "evaluated_readings": {
+            "type": "integer",
+            "title": "Evaluated Readings"
+          },
+          "cpcb_class": {
+            "type": "string",
+            "title": "Cpcb Class"
+          },
+          "intended_use": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intended Use"
+          },
+          "cases_by_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Cases By Status"
+          },
+          "data_quality_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Data Quality Warnings"
+          },
+          "statewide_rows": {
+            "type": "integer",
+            "title": "Statewide Rows"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_ghats",
+          "total_readings",
+          "numeric_readings",
+          "missing_readings",
+          "censored_readings",
+          "latest_sample_year",
+          "flagged_readings",
+          "evaluated_readings",
+          "cpcb_class",
+          "intended_use",
+          "cases_by_status",
+          "data_quality_warnings",
+          "statewide_rows",
+          "generated_at"
+        ],
+        "title": "Overview"
+      },
+      "ParameterInfo": {
+        "properties": {
+          "parameter": {
+            "type": "string",
+            "title": "Parameter"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "observation_count": {
+            "type": "integer",
+            "title": "Observation Count"
+          },
+          "numeric_count": {
+            "type": "integer",
+            "title": "Numeric Count"
+          },
+          "missing_count": {
+            "type": "integer",
+            "title": "Missing Count"
+          },
+          "censored_count": {
+            "type": "integer",
+            "title": "Censored Count"
+          },
+          "first_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Year"
+          },
+          "last_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Year"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parameter",
+          "unit",
+          "observation_count",
+          "numeric_count",
+          "missing_count",
+          "censored_count",
+          "first_year",
+          "last_year"
+        ],
+        "title": "ParameterInfo"
+      },
+      "ParameterMeta": {
+        "properties": {
+          "parameter": {
+            "type": "string",
+            "title": "Parameter"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "observation_count": {
+            "type": "integer",
+            "title": "Observation Count"
+          },
+          "cpcb_classes_with_limit": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Cpcb Classes With Limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parameter",
+          "unit",
+          "observation_count",
+          "cpcb_classes_with_limit"
+        ],
+        "title": "ParameterMeta"
+      },
+      "ParameterTrend": {
+        "properties": {
+          "parameter": {
+            "type": "string",
+            "title": "Parameter"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "sample_count": {
+            "type": "integer",
+            "title": "Sample Count",
+            "description": "Observations with a numeric value"
+          },
+          "missing_count": {
+            "type": "integer",
+            "title": "Missing Count"
+          },
+          "censored_count": {
+            "type": "integer",
+            "title": "Censored Count"
+          },
+          "start_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Year"
+          },
+          "end_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Year"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/TrendPoint"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "period_summary": {
+            "items": {
+              "$ref": "#/components/schemas/PeriodSummary"
+            },
+            "type": "array",
+            "title": "Period Summary"
+          },
+          "trend_summaries": {
+            "items": {
+              "$ref": "#/components/schemas/TrendSummary"
+            },
+            "type": "array",
+            "title": "Trend Summaries"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parameter",
+          "unit",
+          "sample_count",
+          "missing_count",
+          "censored_count",
+          "start_year",
+          "end_year",
+          "series",
+          "period_summary",
+          "trend_summaries",
+          "limitations"
+        ],
+        "title": "ParameterTrend"
+      },
+      "PeriodSummary": {
+        "properties": {
+          "sample_year": {
+            "type": "integer",
+            "title": "Sample Year"
+          },
+          "festival": {
+            "type": "string",
+            "title": "Festival"
+          },
+          "phase": {
+            "type": "string",
+            "title": "Phase"
+          },
+          "n": {
+            "type": "integer",
+            "title": "N"
+          },
+          "mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean"
+          },
+          "median": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sample_year",
+          "festival",
+          "phase",
+          "n",
+          "mean",
+          "median",
+          "min",
+          "max"
+        ],
+        "title": "PeriodSummary"
+      },
+      "RankedGhat": {
+        "properties": {
+          "ghat_id": {
+            "type": "string",
+            "title": "Ghat Id"
+          },
+          "ghat_name": {
+            "type": "string",
+            "title": "Ghat Name"
+          },
+          "priority_level": {
+            "type": "string",
+            "enum": [
+              "high",
+              "review",
+              "routine",
+              "insufficient_data"
+            ],
+            "title": "Priority Level"
+          },
+          "priority_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority Score"
+          },
+          "factors": {
+            "items": {
+              "$ref": "#/components/schemas/FactorOut"
+            },
+            "type": "array",
+            "title": "Factors"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "last_sample_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sample Date"
+          },
+          "last_sample_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sample Year"
+          },
+          "data_completeness": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Completeness"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "cpcb_class": {
+            "type": "string",
+            "title": "Cpcb Class"
+          },
+          "evaluated_reading_count": {
+            "type": "integer",
+            "title": "Evaluated Reading Count"
+          },
+          "outside_reading_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Outside Reading Ids",
+            "description": "Readings outside the criterion"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ghat_id",
+          "ghat_name",
+          "priority_level",
+          "priority_score",
+          "factors",
+          "reasons",
+          "data_completeness",
+          "limitations",
+          "cpcb_class",
+          "evaluated_reading_count"
+        ],
+        "title": "RankedGhat"
+      },
+      "RankedResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RankedGhat"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "cpcb_class": {
+            "type": "string",
+            "title": "Cpcb Class"
+          },
+          "intended_use": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intended Use"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "method",
+          "cpcb_class",
+          "intended_use",
+          "as_of",
+          "disclaimer"
+        ],
+        "title": "RankedResponse"
+      },
+      "Reading": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "ghat_id": {
+            "type": "string",
+            "title": "Ghat Id"
+          },
+          "sample_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Date",
+            "description": "Null: source reports give year/festival/phase only"
+          },
+          "parameter": {
+            "type": "string",
+            "title": "Parameter"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value",
+            "description": "Null when missing or below detection; never zero-filled"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "source_file": {
+            "type": "string",
+            "title": "Source File"
+          },
+          "source_record_id": {
+            "type": "string",
+            "title": "Source Record Id"
+          },
+          "sample_year": {
+            "type": "integer",
+            "title": "Sample Year"
+          },
+          "festival": {
+            "type": "string",
+            "title": "Festival"
+          },
+          "phase": {
+            "type": "string",
+            "title": "Phase"
+          },
+          "sample_period": {
+            "type": "string",
+            "title": "Sample Period"
+          },
+          "flag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flag",
+            "description": "BDL / ND (censored) or 'not sampled', '*', '**' (missing)"
+          },
+          "value_as_printed": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value As Printed"
+          },
+          "source_page": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Page",
+            "description": "Page in the MPPCB PDF report"
+          },
+          "evaluation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ComparisonResult"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Present when evaluate=true"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ghat_id",
+          "parameter",
+          "unit",
+          "source_file",
+          "source_record_id",
+          "sample_year",
+          "festival",
+          "phase",
+          "sample_period"
+        ],
+        "title": "Reading"
+      },
+      "ReadingsPage": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Reading"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "items",
+          "limitations"
+        ],
+        "title": "ReadingsPage"
+      },
+      "Report": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ],
+            "title": "Language"
+          },
+          "selection": {
+            "type": "object",
+            "title": "Selection"
+          },
+          "categories_note": {
+            "type": "string",
+            "title": "Categories Note"
+          },
+          "criteria": {
+            "items": {
+              "$ref": "#/components/schemas/Criterion"
+            },
+            "type": "array",
+            "title": "Criteria"
+          },
+          "criteria_selection_note": {
+            "type": "string",
+            "title": "Criteria Selection Note"
+          },
+          "calculations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Calculations"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/ReportGhatSection"
+            },
+            "type": "array",
+            "title": "Sections"
+          },
+          "historical_context": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Historical Context"
+          },
+          "outlook": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Oct20Outlook"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ai_explanations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ai Explanations"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "generated_at",
+          "language",
+          "selection",
+          "categories_note",
+          "criteria",
+          "criteria_selection_note",
+          "calculations",
+          "sections",
+          "historical_context",
+          "outlook",
+          "ai_explanations",
+          "limitations"
+        ],
+        "title": "Report"
+      },
+      "ReportGhatSection": {
+        "properties": {
+          "ghat_id": {
+            "type": "string",
+            "title": "Ghat Id"
+          },
+          "ghat_name": {
+            "type": "string",
+            "title": "Ghat Name"
+          },
+          "water_body": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Water Body"
+          },
+          "readings": {
+            "items": {
+              "$ref": "#/components/schemas/Reading"
+            },
+            "type": "array",
+            "title": "Readings"
+          },
+          "comparisons": {
+            "items": {
+              "$ref": "#/components/schemas/ComparisonResult"
+            },
+            "type": "array",
+            "title": "Comparisons"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/RankedGhat"
+          },
+          "exceedance_counts_by_parameter": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Exceedance Counts By Parameter"
+          },
+          "cases": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewCase"
+            },
+            "type": "array",
+            "title": "Cases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ghat_id",
+          "ghat_name",
+          "water_body",
+          "readings",
+          "comparisons",
+          "priority",
+          "exceedance_counts_by_parameter",
+          "cases"
+        ],
+        "title": "ReportGhatSection"
+      },
+      "ReportRequest": {
+        "properties": {
+          "ghat_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ghat Ids",
+            "description": "Null/empty = all ghats"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ],
+            "title": "Language",
+            "default": "en"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "json",
+              "csv"
+            ],
+            "title": "Format",
+            "default": "json"
+          }
+        },
+        "type": "object",
+        "title": "ReportRequest"
+      },
+      "Resources": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OfficialResource"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "notice"
+        ],
+        "title": "Resources"
+      },
+      "ReviewCase": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "ghat_id": {
+            "type": "string",
+            "title": "Ghat Id"
+          },
+          "reading_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reading Ids"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "priority_level": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "high",
+                  "review",
+                  "routine",
+                  "insufficient_data"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority Level"
+          },
+          "recommended_action": {
+            "type": "string",
+            "title": "Recommended Action"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "needs_verification",
+              "under_review",
+              "action_assigned",
+              "resolved"
+            ],
+            "title": "Status"
+          },
+          "assigned_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assigned To"
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes"
+          },
+          "resolution_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Summary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ghat_id",
+          "reading_ids",
+          "created_at",
+          "updated_at",
+          "priority_level",
+          "recommended_action",
+          "status",
+          "assigned_to",
+          "notes",
+          "resolution_summary"
+        ],
+        "title": "ReviewCase"
+      },
+      "SeasonValue": {
+        "properties": {
+          "sample_year": {
+            "type": "integer",
+            "title": "Sample Year"
+          },
+          "festival": {
+            "type": "string",
+            "title": "Festival"
+          },
+          "phase": {
+            "type": "string",
+            "title": "Phase"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "flag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flag"
+          },
+          "reading_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reading Ids"
+          },
+          "n_sites": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Sites",
+            "description": "Ghats pooled (only when ghat_id is omitted)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sample_year",
+          "festival",
+          "phase",
+          "value"
+        ],
+        "title": "SeasonValue"
+      },
+      "SourceMeta": {
+        "properties": {
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "retrieved_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieved At"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          },
+          "imported_at": {
+            "type": "string",
+            "title": "Imported At"
+          },
+          "row_count": {
+            "type": "integer",
+            "title": "Row Count"
+          },
+          "valid_row_count": {
+            "type": "integer",
+            "title": "Valid Row Count"
+          },
+          "invalid_row_count": {
+            "type": "integer",
+            "title": "Invalid Row Count"
+          },
+          "year_range": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year Range"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Errors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file_name",
+          "source_url",
+          "retrieved_at",
+          "sha256",
+          "imported_at",
+          "row_count",
+          "valid_row_count",
+          "invalid_row_count",
+          "year_range",
+          "warnings",
+          "errors"
+        ],
+        "title": "SourceMeta"
+      },
+      "StatBlock": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "sample_count": {
+            "type": "integer",
+            "title": "Sample Count",
+            "description": "Numeric observations used"
+          },
+          "excluded_missing": {
+            "type": "integer",
+            "title": "Excluded Missing"
+          },
+          "excluded_censored": {
+            "type": "integer",
+            "title": "Excluded Censored"
+          },
+          "excluded_duplicates": {
+            "type": "integer",
+            "title": "Excluded Duplicates",
+            "default": 0
+          },
+          "site_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Site Count"
+          },
+          "median": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median"
+          },
+          "mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean"
+          },
+          "p25": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P25"
+          },
+          "p75": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P75"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max"
+          },
+          "exceedance_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exceedance Count"
+          },
+          "exceedance_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exceedance Rate"
+          },
+          "years": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Years"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "sample_count",
+          "excluded_missing",
+          "excluded_censored",
+          "site_count",
+          "median",
+          "mean",
+          "p25",
+          "p75",
+          "min",
+          "max",
+          "years"
+        ],
+        "title": "StatBlock"
+      },
+      "TrendPoint": {
+        "properties": {
+          "reading_id": {
+            "type": "string",
+            "title": "Reading Id"
+          },
+          "sample_year": {
+            "type": "integer",
+            "title": "Sample Year"
+          },
+          "festival": {
+            "type": "string",
+            "title": "Festival"
+          },
+          "phase": {
+            "type": "string",
+            "title": "Phase"
+          },
+          "sample_period": {
+            "type": "string",
+            "title": "Sample Period"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "flag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flag"
+          },
+          "source_page": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Page"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reading_id",
+          "sample_year",
+          "festival",
+          "phase",
+          "sample_period",
+          "value",
+          "flag"
+        ],
+        "title": "TrendPoint"
+      },
+      "TrendSummary": {
+        "properties": {
+          "festival": {
+            "type": "string",
+            "title": "Festival"
+          },
+          "phase": {
+            "type": "string",
+            "title": "Phase"
+          },
+          "supported": {
+            "type": "boolean",
+            "title": "Supported"
+          },
+          "observation_count": {
+            "type": "integer",
+            "title": "Observation Count"
+          },
+          "start_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Year"
+          },
+          "end_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Year"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "first_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Value"
+          },
+          "last_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Value"
+          },
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change"
+          },
+          "direction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction",
+            "description": "increase | decrease | unchanged (descriptive only)"
+          },
+          "statistically_tested": {
+            "type": "boolean",
+            "title": "Statistically Tested",
+            "default": false
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "festival",
+          "phase",
+          "supported",
+          "observation_count",
+          "start_year",
+          "end_year",
+          "method",
+          "limitations"
+        ],
+        "title": "TrendSummary"
+      },
+      "TrendsResponse": {
+        "properties": {
+          "ghat_id": {
+            "type": "string",
+            "title": "Ghat Id"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterTrend"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ghat_id",
+          "items"
+        ],
+        "title": "TrendsResponse"
+      },
+      "Uncertainty": {
+        "properties": {
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "lower": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lower"
+          },
+          "upper": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upper"
+          },
+          "std": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Std"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "method",
+          "lower",
+          "upper",
+          "std",
+          "note"
+        ],
+        "title": "Uncertainty"
+      },
+      "WhatsAppRequest": {
+        "properties": {
+          "ghat_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ghat Ids"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi",
+              "bilingual"
+            ],
+            "title": "Language",
+            "default": "hi"
+          },
+          "include_actions": {
+            "type": "boolean",
+            "title": "Include Actions",
+            "default": true
+          },
+          "use_ai": {
+            "type": "boolean",
+            "title": "Use Ai",
+            "default": true
+          },
+          "require_ai": {
+            "type": "boolean",
+            "title": "Require Ai",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "WhatsAppRequest"
+      },
+      "WhatsAppResponse": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi",
+              "bilingual"
+            ],
+            "title": "Language"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceItem"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "generation_mode": {
+            "type": "string",
+            "enum": [
+              "template",
+              "ai"
+            ],
+            "title": "Generation Mode"
+          },
+          "ai_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Status"
+          },
+          "brief_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brief Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content",
+          "language",
+          "evidence",
+          "limitations",
+          "generated_at",
+          "generation_mode"
+        ],
+        "title": "WhatsAppResponse"
+      }
+    }
+  }
+}

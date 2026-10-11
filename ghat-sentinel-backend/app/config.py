@@ -16,10 +16,9 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./ghat_sentinel.db"
     DATA_DIR: str = "./data"
 
-    CEREBRAS_API_KEY: str = ""
-    CEREBRAS_MODEL: str = ""
-    CEREBRAS_BASE_URL: str = "https://api.cerebras.ai/v1"
-    CEREBRAS_TIMEOUT_SECONDS: float = 20.0
+    ANTHROPIC_API_KEY: str = ""
+    ANTHROPIC_MODEL: str = ""
+    AI_TIMEOUT_SECONDS: float = 20.0
 
     AI_RATE_LIMIT_PER_MINUTE: int = 20
     MAX_REQUEST_BYTES: int = 1_000_000
@@ -39,7 +38,7 @@ class Settings(BaseSettings):
 
     @property
     def ai_configured(self) -> bool:
-        return bool(self.CEREBRAS_API_KEY.strip() and self.CEREBRAS_MODEL.strip())
+        return bool(self.ANTHROPIC_API_KEY.strip() and self.ANTHROPIC_MODEL.strip())
 
 
 @lru_cache

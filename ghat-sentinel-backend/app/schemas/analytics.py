@@ -2,7 +2,8 @@ from datetime import date
 
 from pydantic import BaseModel, Field
 
-from app.schemas.common import CaseStatus
+from app.schemas.common import CaseStatus, Page
+from app.schemas.reading import Reading
 
 
 class TrendPoint(BaseModel):
@@ -60,6 +61,19 @@ class ParameterTrend(BaseModel):
 class TrendsResponse(BaseModel):
     ghat_id: str
     items: list[ParameterTrend]
+
+
+class Finding(BaseModel):
+    ghat_id: str
+    ghat_name: str
+    reading: Reading = Field(description="The reading, with its criterion comparison in `reading.evaluation`")
+
+
+class FindingsPage(Page):
+    items: list[Finding]
+    cpcb_class: str
+    intended_use: str | None
+    note: str
 
 
 class Overview(BaseModel):

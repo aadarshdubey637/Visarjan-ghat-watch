@@ -1,4 +1,4 @@
-"""Cerebras Inference integration (OpenAI-compatible chat-completions endpoint) with strict output validation.
+"""Claude (Anthropic Messages API) integration with strict output validation.
 
 AI only *explains* evidence that the backend already retrieved/calculated. Every response is validated:
   * must be JSON {"answerable": bool, "content": str, "cited_ids": [str]}
@@ -6,6 +6,8 @@ AI only *explains* evidence that the backend already retrieved/calculated. Every
   * every number in the text must appear in the supplied evidence (no invented measurements/thresholds)
   * every URL in the text must appear in the supplied evidence
 Anything else is rejected and the caller falls back to deterministic template text.
+
+The model ID comes from ANTHROPIC_MODEL (e.g. a Haiku or Sonnet model enabled for your key); it is never hardcoded.
 """
 from __future__ import annotations
 
@@ -14,17 +16,18 @@ import logging
 import re
 from dataclasses import dataclass
 
-import httpx
+import anthropic
 
 from app.config import settings
 from app.exceptions import AIUnavailableError
 from app.schemas.common import EvidenceItem
 
-log = logging.getLogger("ghat_sentinel.cerebras")
+log = logging.getLogger("ghat_sentinel.ai")
 
 MAX_EVIDENCE_CHARS = 12_000
 MAX_OUTPUT_CHARS = 4_000
-_TRANSPORT: httpx.BaseTransport | None = None  # tests inject httpx.MockTransport here
+# Generous: some models spend part of max_tokens on internal reasoning before the visible answer.
+MAX_TOKENS = 4096
 
 SYSTEM_PROMPT = (
     "You are a careful assistant for Bhopal municipal officers and citizens. Use ONLY the evidence items provided "
@@ -49,33 +52,39 @@ class AIResult:
     answerable: bool
 
 
-def _client() -> httpx.Client:
-    return httpx.Client(timeout=settings.CEREBRAS_TIMEOUT_SECONDS, transport=_TRANSPORT)
+def make_client() -> anthropic.Anthropic:
+    """Separate function so tests can substitute a fake client."""
+    return anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY, timeout=settings.AI_TIMEOUT_SECONDS,
+                               max_retries=1)
 
 
-def chat_completion(system: str, user: str, max_tokens: int = 1200) -> str:
-    """Call Cerebras and return the assistant message text. Raises AIUnavailableError with safe messages."""
+def chat_completion(system: str, user: str, max_tokens: int = MAX_TOKENS) -> str:
+    """Call Claude and return the assistant text. Raises AIUnavailableError with safe (secret-free) messages."""
     if not settings.ai_configured:
-        raise AIUnavailableError("AI is not configured (CEREBRAS_API_KEY / CEREBRAS_MODEL missing).",
+        raise AIUnavailableError("AI is not configured (ANTHROPIC_API_KEY / ANTHROPIC_MODEL missing).",
                                  code="AI_NOT_CONFIGURED")
-    url = settings.CEREBRAS_BASE_URL.rstrip("/") + "/chat/completions"
-    payload = {"model": settings.CEREBRAS_MODEL, "max_tokens": max_tokens, "temperature": 0.1,
-               "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
     try:
-        with _client() as client:
-            resp = client.post(url, json=payload, headers={"Authorization": f"Bearer {settings.CEREBRAS_API_KEY}"})
-    except httpx.TimeoutException:
+        resp = make_client().messages.create(model=settings.ANTHROPIC_MODEL, max_tokens=max_tokens, system=system,
+                                             messages=[{"role": "user", "content": user}])
+    except anthropic.APITimeoutError:
         raise AIUnavailableError("The AI service timed out.", code="AI_TIMEOUT") from None
-    except httpx.HTTPError:
+    except anthropic.APIConnectionError:
         raise AIUnavailableError("The AI service could not be reached.", code="AI_UPSTREAM_ERROR") from None
-    if resp.status_code != 200:
-        log.warning("Cerebras returned HTTP %s", resp.status_code)  # never log the key or the body
-        raise AIUnavailableError(f"The AI service returned an error (HTTP {resp.status_code}).",
-                                 code="AI_UPSTREAM_ERROR")
-    try:
-        return resp.json()["choices"][0]["message"]["content"]
-    except (ValueError, KeyError, IndexError, TypeError):
-        raise AIUnavailableError("The AI service returned an unreadable response.", code="AI_BAD_RESPONSE") from None
+    except anthropic.APIStatusError as exc:
+        log.warning("Anthropic API returned HTTP %s", exc.status_code)  # never log the key or the body
+        raise AIUnavailableError(f"The AI service returned an error (HTTP {exc.status_code}).",
+                                 code="AI_UPSTREAM_ERROR") from None
+    except Exception:
+        log.exception("Unexpected AI client error")
+        raise AIUnavailableError("The AI service failed unexpectedly.", code="AI_UPSTREAM_ERROR") from None
+    if resp.stop_reason == "refusal":
+        raise AIUnavailableError("The AI service declined this request.", code="AI_REFUSED")
+    if resp.stop_reason == "max_tokens":
+        raise AIUnavailableError("The AI response was cut off.", code="AI_BAD_RESPONSE")
+    text = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text")
+    if not text.strip():
+        raise AIUnavailableError("The AI service returned an empty response.", code="AI_BAD_RESPONSE")
+    return text
 
 
 # --------------------------------------------------------------------------- validation
@@ -113,7 +122,7 @@ def parse_and_validate(raw: str, evidence: list[EvidenceItem]) -> AIResult:
         raise InvalidAIOutput(f"cited IDs not in supplied evidence: {unknown}")
     if answerable and evidence and not cited:
         raise InvalidAIOutput("answer cites no evidence")
-    allowed_numbers = set()
+    allowed_numbers: set[str] = set()
     allowed_text = ""
     for e in evidence:
         blob = " ".join(str(x) for x in (e.id, e.text, e.value, e.sample_period, e.source_record_id, e.source_page,
@@ -140,15 +149,13 @@ def evidence_payload(evidence: list[EvidenceItem]) -> list[dict]:
     return out
 
 
-def generate_grounded(task: str, language: str, evidence: list[EvidenceItem], question: str | None = None,
-                      max_tokens: int = 1200) -> AIResult:
+def generate_grounded(task: str, language: str, evidence: list[EvidenceItem], question: str | None = None) -> AIResult:
     payload = evidence_payload(evidence)
     kept = [e for e in evidence if e.id in {p["id"] for p in payload}]
     lang = {"hi": "Hindi (Devanagari script)", "en": "English", "bilingual": "Hindi first, then English"}[language]
     user = json.dumps({"task": task, "write_in": lang, "question": question, "evidence": payload},
                       ensure_ascii=False)
-    raw = chat_completion(SYSTEM_PROMPT, user, max_tokens=max_tokens)
-    return parse_and_validate(raw, kept)
+    return parse_and_validate(chat_completion(SYSTEM_PROMPT, user), kept)
 
 
 def try_ai(use_ai: bool, require_ai: bool, task: str, language: str, evidence: list[EvidenceItem],

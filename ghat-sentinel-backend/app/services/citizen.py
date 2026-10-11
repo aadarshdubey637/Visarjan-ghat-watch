@@ -13,7 +13,7 @@ from app.models import Reading
 from app.schemas.citizen import (CitizenGhat, CitizenGhats, CitizenQuestion, GuidanceItem, Guide, OfficialResource,
                                  Resources)
 from app.schemas.common import AIResponse, EvidenceItem
-from app.services import cerebras
+from app.services import ai
 from app.services import criteria as crit
 from app.services.analytics import get_ghat
 from app.services.briefs import LIMITATIONS_HI, PARAM_HI, build_pack, limit_text, period_label
@@ -163,7 +163,7 @@ def answer_question(db: Session, req: CitizenQuestion) -> AIResponse:
                     break
     answer = "\n\n".join(parts)
     mode, status = "template", None
-    result, status = cerebras.try_ai(
+    result, status = ai.try_ai(
         req.use_ai, req.require_ai,
         "Answer the citizen's question using only the evidence. If the question asks about current water safety, state "
         "that no current observations are available. Do not invent sites, timings, permissions or helplines.",
