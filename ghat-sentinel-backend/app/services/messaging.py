@@ -38,7 +38,7 @@ def wa_mode() -> str:
 
 
 def get_config() -> MessagingConfig:
-    from_address = parseaddr(settings.smtp_sender)[1] or None
+    from_address = parseaddr(settings.mail_sender)[1] or None
     template = settings.WHATSAPP_TEMPLATE_NAME.strip() or None
     return MessagingConfig(
         email=EmailConfig(configured=settings.email_configured, from_address=from_address),
@@ -69,8 +69,36 @@ def list_log(db: Session, channel: str | None, limit: int, offset: int) -> Messa
 
 # ----------------------------------------------------------------------------- e-mail
 
+class EmailApiError(Exception):
+    """A failure from the HTTPS e-mail API; `args[0]` is already a short, credential-free message."""
+
+
+def _send_email_api(sender: str, recipient: str, subject: str, body: str) -> None:
+    try:
+        resp = httpx.post("https://api.resend.com/emails",
+                          headers={"Authorization": f"Bearer {settings.RESEND_API_KEY.strip()}"},
+                          json={"from": sender, "to": [recipient], "subject": subject, "text": body},
+                          timeout=settings.SMTP_TIMEOUT_SECONDS)
+    except httpx.TimeoutException:
+        raise EmailApiError("Mail service timed out") from None
+    except httpx.HTTPError:
+        raise EmailApiError("Could not connect to the mail service") from None
+    if 200 <= resp.status_code < 300:
+        return
+    try:
+        detail = str(resp.json().get("message") or "")
+    except Exception:  # noqa: BLE001
+        detail = ""
+    if resp.status_code in (401, 403) and "only send testing emails" not in detail.lower():
+        raise EmailApiError("Mail service API key is invalid")
+    raise EmailApiError(f"Mail service rejected the message: {_clean_provider_text(detail, 160)}" if detail
+                        else f"Mail service rejected the message (HTTP {resp.status_code})")
+
+
 def _smtp_error(exc: Exception) -> str:
     """Short, fixed, credential-free text for an SMTP/network failure."""
+    if isinstance(exc, EmailApiError):
+        return str(exc)
     if isinstance(exc, smtplib.SMTPAuthenticationError):
         return "Authentication failed"
     if isinstance(exc, smtplib.SMTPRecipientsRefused):
@@ -146,9 +174,9 @@ def whatsapp_payload(to: str, body: str) -> tuple[dict, str]:
 
 
 def _clean_provider_text(text: str, limit: int = 200) -> str:
-    token = settings.WHATSAPP_ACCESS_TOKEN.strip()
-    if token:
-        text = text.replace(token, "[redacted]")
+    for secret in (settings.WHATSAPP_ACCESS_TOKEN.strip(), settings.RESEND_API_KEY.strip()):
+        if secret:
+            text = text.replace(secret, "[redacted]")
     text = re.sub(r"(?i)bearer\s+\S+", "Bearer [redacted]", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text[:limit]
@@ -264,7 +292,11 @@ def send_email(db: Session, to: list[str], subject: str, body: str, brief_id: st
             rows.append(_row(clock, "email", rcpt, subject, body, sent_by, brief_id, "dry_run"))
             continue
         try:
-            _send_smtp(build_email(settings.smtp_sender, rcpt, subject, body))
+            if settings.email_api:
+                build_email(settings.mail_sender, rcpt, subject, body)  # same header-injection checks as SMTP
+                _send_email_api(settings.mail_sender, rcpt, subject, body)
+            else:
+                _send_smtp(build_email(settings.smtp_sender, rcpt, subject, body))
             rows.append(_row(clock, "email", rcpt, subject, body, sent_by, brief_id, "sent"))
         except Exception as exc:  # noqa: BLE001  (one recipient must never stop the rest)
             log.warning("E-mail delivery failed (%s)", type(exc).__name__)

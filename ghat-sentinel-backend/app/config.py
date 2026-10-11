@@ -49,6 +49,9 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USERNAME: str = ""
     SMTP_PASSWORD: str = ""
+    # HTTPS e-mail API (Resend). Use this where outbound SMTP ports are blocked, e.g. Render free instances.
+    RESEND_API_KEY: str = ""
+    EMAIL_API_FROM: str = ""  # default: Resend sandbox sender, which only delivers to the Resend account owner
     SMTP_FROM: str = ""  # e.g. "Ghat Sentinel <you@example.com>"; falls back to SMTP_USERNAME
     SMTP_STARTTLS: bool = True
     SMTP_USE_SSL: bool = False  # implicit TLS (port 465)
@@ -88,6 +91,17 @@ class Settings(BaseSettings):
         return f"{m.group('name').strip()} <{m.group('addr')}>" if m else raw
 
     @property
+    def email_api(self) -> bool:
+        return bool(self.RESEND_API_KEY.strip())
+
+    @property
+    def mail_sender(self) -> str:
+        """Sender used for outgoing mail: the API sender when the HTTPS API is configured, else the SMTP sender."""
+        if self.email_api:
+            return self.EMAIL_API_FROM.strip() or "Ghat Sentinel <onboarding@resend.dev>"
+        return self.smtp_sender
+
+    @property
     def smtp_password(self) -> str:
         """Google shows app passwords as 'abcd efgh ijkl mnop'; the real password has no spaces."""
         if self.SMTP_HOST.strip().lower().endswith(("gmail.com", "googlemail.com")):
@@ -98,6 +112,8 @@ class Settings(BaseSettings):
     def email_missing(self) -> list[str]:
         """Names (never values) of the settings that prevent e-mail sending."""
         missing = []
+        if self.email_api:
+            return missing
         if not self.SMTP_HOST.strip():
             missing.append("SMTP_HOST")
         if not self.smtp_sender:

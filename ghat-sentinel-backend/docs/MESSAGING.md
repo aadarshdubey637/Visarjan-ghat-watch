@@ -50,6 +50,8 @@ Existing databases get the column automatically at startup.
 | `SMTP_HOST` | empty | SMTP server, e.g. `smtp.gmail.com` |
 | `SMTP_PORT` | `587` | 587 for STARTTLS, 465 for SSL |
 | `SMTP_USERNAME`, `SMTP_PASSWORD` | empty | login; set both or neither |
+| `RESEND_API_KEY` | empty | Send e-mail through Resend's HTTPS API instead of SMTP. Needed on hosts that block SMTP ports (Render free instances). Takes precedence over SMTP. The sandbox sender `onboarding@resend.dev` only delivers to the Resend account owner's address; verify a domain and set `EMAIL_API_FROM` to send to anyone |
+| `EMAIL_API_FROM` | `Ghat Sentinel <onboarding@resend.dev>` | Sender for the HTTPS API |
 | `SMTP_FROM` | empty | e.g. `Ghat Sentinel <you@example.com>`; falls back to `SMTP_USERNAME` |
 | `SMTP_STARTTLS` | `true` | upgrade the connection with STARTTLS (port 587) |
 | `SMTP_USE_SSL` | `false` | implicit TLS (port 465); then STARTTLS is not used |

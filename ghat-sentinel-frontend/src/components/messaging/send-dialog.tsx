@@ -116,9 +116,9 @@ export function SendDialog({ open, onClose, channel: initialChannel = "email", s
           <div className="space-y-3" role="status" aria-live="polite">
             <p className="text-sm font-medium">{result.dry_run ? "Dry run complete: nothing was sent." : `${result.sent} sent${result.failed ? `, ${result.failed} failed` : ""}.`}</p>
             <ul className="max-h-56 space-y-1 overflow-y-auto">{result.results.map((r) => (
-              <li key={r.recipient} className="flex items-start gap-2 rounded-md border border-line p-2 text-xs">
+              <li key={r.recipient} className="flex flex-wrap items-start gap-2 rounded-md border border-line p-2 text-xs">
                 {r.status === "failed" ? <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-critical" aria-hidden /> : <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand" aria-hidden />}
-                <span className="num min-w-0 flex-1 break-all">{channel === "whatsapp" ? `+${r.recipient}` : r.recipient}</span>
+                <span className="num min-w-[10rem] flex-1 break-all">{channel === "whatsapp" ? `+${r.recipient}` : r.recipient}</span>
                 <Chip tone={r.status === "sent" ? "good" : r.status === "dry_run" ? "neutral" : "bad"}>{r.status === "dry_run" ? "dry run" : r.status}</Chip>
                 {r.error && <span className="basis-full pl-5 text-critical">{r.error}</span>}
               </li>))}</ul>
