@@ -89,6 +89,9 @@ def _send_email_api(sender: str, recipient: str, subject: str, body: str) -> Non
         detail = str(resp.json().get("message") or "")
     except Exception:  # noqa: BLE001
         detail = ""
+    if resp.status_code == 403 and "only send testing emails" in detail.lower():
+        raise EmailApiError("Demo email mode: the free sender can only deliver to the project owner's inbox. "
+                            "A verified sending domain is needed to email anyone else.")
     if resp.status_code == 401:
         raise EmailApiError("Mail service API key is invalid (it should start with re_)")
     raise EmailApiError(f"Mail service rejected the message: {_clean_provider_text(detail, 160)}" if detail

@@ -84,6 +84,9 @@ export function SendDialog({ open, onClose, channel: initialChannel = "email", s
                 })}</div>
               )}
             </div>
+            {channel === "email" && c?.email.from_address?.endsWith("@resend.dev") && (
+              <p className="rounded-md border border-marigold/40 bg-marigold-soft p-2.5 text-xs text-marigold-dark">Demo email mode: the free sender can only deliver to the project owner&apos;s inbox. Other addresses are accepted here but will be rejected until a sending domain is verified.</p>
+            )}
             <Field label={channel === "email" ? "Other email addresses" : "Other WhatsApp numbers (with country code)"} htmlFor="sr" hint="Separate with commas or new lines."
               error={parsed.invalid.length ? `Not valid: ${parsed.invalid.slice(0, 3).join(", ")}${parsed.invalid.length > 3 ? "…" : ""}` : tooMany ? `At most ${maxR} recipients per message.` : undefined}>
               <Textarea id="sr" rows={2} value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={channel === "email" ? "name@example.com, other@example.com" : "+91 98765 43210"} />

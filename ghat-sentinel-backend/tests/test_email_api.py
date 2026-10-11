@@ -44,7 +44,7 @@ def test_email_via_https_api(client, monkeypatch):
 def test_api_errors_are_short_and_never_leak_the_key(client, monkeypatch):
     _setup(monkeypatch, FakeResp(403, {"message": "You can only send testing emails to your own address"}))
     r = client.post(f"{P}/messaging/email", json={"to": ["a@b.co"], "subject": "Hi", "body": "B"}).json()
-    assert r["failed"] == 1 and "testing emails" in r["results"][0]["error"]
+    assert r["failed"] == 1 and "Demo email mode" in r["results"][0]["error"]
     _setup(monkeypatch, FakeResp(401, {"message": "API key is invalid re_test_key_123"}))
     r = client.post(f"{P}/messaging/email", json={"to": ["a@b.co"], "subject": "Hi", "body": "B"}).json()
     assert r["results"][0]["error"].startswith("Mail service API key is invalid")
